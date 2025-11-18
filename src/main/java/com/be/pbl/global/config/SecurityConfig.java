@@ -1,4 +1,4 @@
-package com.skthon.sixthsensebe.global.config;
+package com.be.pbl.global.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,11 +19,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig implements WebMvcConfigurer {
-  @Value("${spring.cloud.config.username}")
-  private String username;
-
-  @Value("${spring.cloud.config.password}")
-  private String password;
 
   // CorsConfig에서 만든 CORS 설정을 주입받기
   @Autowired private UrlBasedCorsConfigurationSource corsConfigurationSource;
@@ -40,18 +35,5 @@ public class SecurityConfig implements WebMvcConfigurer {
         .authorizeHttpRequests((auth) -> auth.anyRequest().permitAll()) // 모든 요청 허용
         // .httpBasic(Customizer.withDefaults())
         .build();
-  }
-
-  @Bean
-  public UserDetailsService userDetailsService() {
-
-    UserDetails admin =
-        User.builder()
-            .username(username)
-            .password(passwordEncoder().encode(password))
-            .roles("ADMIN")
-            .build();
-
-    return new InMemoryUserDetailsManager(admin);
   }
 }

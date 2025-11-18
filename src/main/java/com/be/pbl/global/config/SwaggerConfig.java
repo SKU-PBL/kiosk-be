@@ -1,4 +1,4 @@
-package com.skthon.sixthsensebe.global.config;
+package com.be.pbl.global.config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -34,18 +34,7 @@ public class SwaggerConfig {
     return new OpenAPI()
         .addServersItem(localServer)
         .addServersItem(prodServer)
-        .info(new Info().title("Swagger API 명세서").version("1.0").description("SKTHON-sixthsense"))
-        // Bearer 토큰 인증 설정
-        .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
-        .components(
-            new Components()
-                .addSecuritySchemes(
-                    securitySchemeName,
-                    new SecurityScheme()
-                        .name(securitySchemeName)
-                        .type(SecurityScheme.Type.HTTP)
-                        .scheme("bearer")
-                        .bearerFormat("JWT")));
+        .info(new Info().title("Swagger API 명세서").version("1.0").description("PBL-kiosk-App"));
   }
 
   @Bean
