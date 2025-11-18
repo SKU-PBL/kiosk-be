@@ -42,7 +42,13 @@ public class ExhibitionServiceImpl implements ExhibitionService {
     public List<ExhibitionInfoResponse> getAllExhibition() {
         try {
             log.info("전시회 정보 전체 조회");
+
             List<Exhibition> exhibitions = exhibitionRepository.findAll();
+
+            if(exhibitions.isEmpty()){
+                log.info("전시회 테이블이 비어있습니다(저장된 전시회 없음).");
+            }
+
             return exhibitions.stream()
                 .map(exhibitionMapper::toExhibitionResponse)
                 .toList();

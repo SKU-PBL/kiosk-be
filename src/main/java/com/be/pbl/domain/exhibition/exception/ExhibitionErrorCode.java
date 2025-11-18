@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ExhibitionErrorCode implements BaseErrorCode {
 
+    EXHIBITION_LIST_EMPTY("EXHIBITION_002", "전시회 목록이 비어있습니다.", HttpStatus.NO_CONTENT),
     EXHIBITION_NOT_FOUND("EXHIBITION_001", "전시회를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
 
     private final String code;
