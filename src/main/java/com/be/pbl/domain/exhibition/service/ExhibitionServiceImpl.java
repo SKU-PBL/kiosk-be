@@ -29,6 +29,7 @@ public class ExhibitionServiceImpl implements ExhibitionService {
             log.info("전시회 정보 조회 {} ", id);
             Exhibition exhibition = exhibitionRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ExhibitionErrorCode.EXHIBITION_NOT_FOUND));
+            return exhibitionMapper.toExhibitionResponse(exhibition);
         } catch (Exception e) {
             log.error("전시회 정보 조회 실패");
             throw new CustomException(ExhibitionErrorCode.EXHIBITION_NOT_FOUND);
