@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Getter
 @AllArgsConstructor
@@ -34,7 +36,7 @@ public class Exhibition extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "tag")
-    private Tag tag; // 작품 태그
+    private List<Tag> tags; // 작품 태그
 
     @Column(name = "views")
     private String views; // 조회수
