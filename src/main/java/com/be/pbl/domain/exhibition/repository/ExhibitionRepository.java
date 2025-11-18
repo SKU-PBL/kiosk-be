@@ -1,4 +1,8 @@
 package com.be.pbl.domain.exhibition.repository;
 
-public class ExhibitionRepository {
+import com.be.pbl.domain.exhibition.entity.Exhibition;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface ExhibitionRepository extends JpaRepository<Exhibition, Long> {
+
 }

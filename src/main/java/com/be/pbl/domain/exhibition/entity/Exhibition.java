@@ -34,8 +34,11 @@ public class Exhibition extends BaseTimeEntity {
     @Column(name = "operatingHours")
     private String operatingHours; // 전시회 운영 시간
 
+    // 컬렉션 어노태이션으로 tag 테이블을 만들고 매핑함 (필드로 존재x)
+    @ElementCollection(targetClass = Tag.class) // 컬렉션(List, Set 등)을 별도의 테이블에 저장하기 위한 어노테이션
+    @CollectionTable(name = "tag", joinColumns = @JoinColumn(name = "exhibition_id"))
     @Enumerated(EnumType.STRING)
-    @Column(name = "tag")
+    @Column(name = "tags")
     private List<Tag> tags; // 작품 태그
 
     @Column(name = "views")
