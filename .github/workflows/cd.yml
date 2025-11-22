@@ -68,14 +68,14 @@ jobs:
         run: |
           echo "Current user: $(whoami)"
           echo "Home directory: $HOME"
-          mkdir -p $HOME/cesco-BackEnd
-          cp docker-compose.yml $HOME/cesco-BackEnd/
-          cp .env $HOME/cesco-BackEnd/
+          mkdir -p $HOME/pbl-be
+          cp docker-compose.yml $HOME/pbl-be/
+          cp .env $HOME/pbl-be/
 
       # 4. Docker 배포 실행
       - name: Deploy with Docker
         run: |
-          cd $HOME/cesco-BackEnd
+          cd $HOME/pbl-be
           docker compose down
           docker compose pull
           docker compose up -d --build
