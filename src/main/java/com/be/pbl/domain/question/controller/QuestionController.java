@@ -23,11 +23,11 @@ public class QuestionController {
     private final QuestionService questionService;
 
     @GetMapping
-    @Operation(summary = "질문 전체 조회", description = "이상형 월드컵에 사용되는 모든 질문을 순서대로 조회합니다.")
-    public ResponseEntity<BaseResponse<List<QuestionResponse>>> getAllQuestions() {
-        List<QuestionResponse> responses = questionService.getAllQuestions();
+    @Operation(summary = "랜덤 질문 5개 조회", description = "카테고리 별 1개씩 총 5개의 무작위 질문 조회합니다.")
+    public ResponseEntity<BaseResponse<List<QuestionResponse>>> getFiveRandomQuestions() {
+        List<QuestionResponse> responses = questionService.getFiveRandomQuestions();
         return ResponseEntity.ok(
-                BaseResponse.success("질문 전체 조회에 성공했습니다.", responses)
+                BaseResponse.success("카테고리별 랜덤 질문 5개 조회에 성공했습니다.", responses)
         );
     }
 

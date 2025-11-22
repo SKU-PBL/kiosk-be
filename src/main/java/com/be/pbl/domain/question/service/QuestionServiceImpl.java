@@ -15,7 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,30 +29,45 @@ public class QuestionServiceImpl implements QuestionService {
     private final QuestionMapper questionMapper;
 
     @Override
-    public List<QuestionResponse> getAllQuestions() {
-        log.info("질문 전체 조회 요청 - 카테고리별 랜덤 1개씩");
+    public List<QuestionResponse> getFiveRandomQuestions() {
+        List<Question> questions = questionRepository.findAll(); // 혹은 카테고리별 조회
 
-        List<QuestionResponse> result = new ArrayList<>();
-
-        for (Category category : Category.values()) {
-            List<Question> questions = questionRepository.findByCategory(category);
-
-            if (questions.isEmpty()) {
-                log.warn("카테고리 {} 에 해당하는 질문이 없습니다.", category);
-                continue; // 없으면 스킵 (원하면 여기서 예외 던져도 됨)
-            }
-
-            // 랜덤 1개 선택
-            Question picked = questions.get(
-                    ThreadLocalRandom.current().nextInt(questions.size())
-            );
-
-            result.add(questionMapper.toResponse(picked));
+        if (questions.size() < 5) {
+            throw new CustomException(QuestionErrorCode.QUESTION_NOT_ENOUGH_FOR_RANDOM);
         }
 
-        if (result.isEmpty()) {
-            log.error("모든 카테고리에서 질문을 찾지 못했습니다.");
-            throw new CustomException(QuestionErrorCode.QUESTION_NOT_FOUND);
+        // 랜덤으로 5개 뽑는 로직...
+        List<Question> randomFive = pickFiveRandom(questions);
+
+        return randomFive.stream()
+                .map(questionMapper::toResponse)
+                .toList();
+    }
+
+    // getFiveRandomQuestions를 위한 내부 비즈니스 로직 메서드
+    private List<Question> pickFiveRandom(List<Question> questions) {
+
+        // 전체 질문을 카테고리 기준으로 그룹핑
+        Map<Category, List<Question>> grouped = questions.stream()
+                .collect(Collectors.groupingBy(Question::getCategory));
+
+        List<Question> result = new ArrayList<>();
+
+        // 모든 카테고리에 대해 1개씩 선택
+        for (Category category : Category.values()) {
+            List<Question> categoryQuestions = grouped.get(category);
+
+            // 해당 카테고리에 질문이 없다면 에러 처리
+            if (categoryQuestions == null || categoryQuestions.isEmpty()) {
+                throw new CustomException(QuestionErrorCode.QUESTION_NOT_ENOUGH_FOR_RANDOM);
+            }
+
+            // 해당 카테고리에서 랜덤으로 하나 선택
+            Question random = categoryQuestions.get(
+                    ThreadLocalRandom.current().nextInt(categoryQuestions.size())
+            );
+
+            result.add(random);
         }
 
         return result;
@@ -58,21 +75,12 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public QuestionResponse getQuestion(Long id) {
-        try {
-            log.info("질문 단일 조회 요청 id={}", id);
+        Question question = questionRepository.findById(id)
+                .orElseThrow(() -> new CustomException(QuestionErrorCode.QUESTION_NOT_FOUND));
 
-            Question question = questionRepository.findById(id)
-                    .orElseThrow(() -> new CustomException(QuestionErrorCode.QUESTION_NOT_FOUND));
-
-            return questionMapper.toResponse(question);
-
-        } catch (CustomException e) {
-            throw e; // 이미 도메인 예외이므로 그대로 던짐
-        } catch (Exception e) {
-            log.error("질문 단일 조회 실패 id={}", id, e);
-            throw new CustomException(QuestionErrorCode.QUESTION_NOT_FOUND);
-        }
+        return questionMapper.toResponse(question);
     }
+
 
     @Override
     @Transactional

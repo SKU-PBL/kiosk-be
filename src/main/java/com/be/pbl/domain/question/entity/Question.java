@@ -38,4 +38,6 @@ public class Question extends BaseTimeEntity {
     // 오른쪽 이미지 URL
     @Column(name = "right_image_url")
     private String rightImageUrl;
+
+    // 생성 타임 & 수정 타임 추가하기
 }

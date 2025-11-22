@@ -8,7 +8,7 @@ import java.util.List;
 public interface QuestionService {
 
     // 질문 전체 조회 (1~5번 모두)
-    List<QuestionResponse> getAllQuestions();
+    List<QuestionResponse> getFiveRandomQuestions();
 
     // 질문 단건(개별) 조회
     QuestionResponse getQuestion(Long id);
