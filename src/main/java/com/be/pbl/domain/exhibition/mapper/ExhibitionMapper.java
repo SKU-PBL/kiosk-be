@@ -31,4 +31,9 @@ public class ExhibitionMapper {
                 .build())
             .collect(Collectors.toList());
     }
+    public List<ExhibitionInfoResponse> toRecommendResponses(List<Exhibition> exhibitions) {
+        return exhibitions.stream()
+                .map(this::toExhibitionResponse)
+                .toList();
+    }
 }
