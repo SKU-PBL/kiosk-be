@@ -13,6 +13,6 @@ public class ExhibitionTag {
     @Schema(description = "전시회 태그")
     private String tagName;
 
-    @Schema(description = "전시회 태그 tjfaud")
+    @Schema(description = "전시회 태그 설명")
     private String tagDescription;
 }
