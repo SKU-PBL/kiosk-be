@@ -18,7 +18,10 @@ public class ExhibitionMapper {
             .title(exhibition.getTitle())
             .address(exhibition.getAddress())
             .author(exhibition.getAuthor())
-            .operatingHours(exhibition.getOperatingHours())
+            .startDate(exhibition.getStartDate())
+            .endDate(exhibition.getEndDate())
+            .openTime(exhibition.getOpenTime())
+            .closeTime(exhibition.getCloseTime())
             .tags(toExhibitionTags(exhibition.getTags()))
             .build();
     }

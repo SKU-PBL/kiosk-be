@@ -35,7 +35,7 @@ public class ExhibitionController {
         return ResponseEntity.ok(BaseResponse.success("전시회 정보 전체 조회에 성공했습니다.",response));
     }
     @PostMapping("/recommend")
-    @Operation(summary = "전시 추천", description = "사용자 응답을 기반으로 전시회를 추천합니다.")
+    @Operation(summary = "이상형 월드컵(전시회 추천)", description = "5개의 질문에 대한 사용자 응답을 기반으로 전시회를 추천합니다.")
     public ResponseEntity<BaseResponse<ExhibitionRecommendResponse>> recommend(
             @RequestBody QuestionAnswerListRequest request
     ) {
