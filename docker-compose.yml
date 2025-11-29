@@ -17,8 +17,9 @@ services:
 
   app:
     image: imjuyongp/pbl:latest # 추후에 도커 허브에 저장할 이미지 계정이랑 이미지 이름 설정하기
-    ports:
-      - "8080:8080"  # 호스트의 8080 포트를 컨테이너의 8080 포트와 매핑
+    restart: always
+    expose:
+      - "8080"
     env_file:
       - .env # 팀원들끼리만 공유
     environment:
@@ -35,6 +36,27 @@ services:
     networks:
       - pbl-network  # services 끼리는 같은 네트워크를 공유
 
+  nginx:
+    image: nginx:alpine
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/certbot:/etc/letsencrypt
+      - ./nginx/www:/var/www/certbot
+    depends_on:
+      - app
+    networks:
+      - pbl-network
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./nginx/certbot:/etc/letsencrypt
+      - ./nginx/www:/var/www/certbot
+    networks:
+      - pbl-network
 networks:
   pbl-network:
     driver: bridge  # Docker 기본 브리지 네트워크를 사용
