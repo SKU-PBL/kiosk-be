@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Entity
@@ -22,7 +24,7 @@ public class Exhibition extends BaseTimeEntity {
     @Column(name = "title")
     private String title; // 전시회 제목
 
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description; // 전시회 설명
 
     @Column(name = "address")
@@ -31,8 +33,17 @@ public class Exhibition extends BaseTimeEntity {
     @Column(name = "author")
     private String author; // 작가
 
-    @Column(name = "operatingHours")
-    private String operatingHours; // 전시회 운영 시간
+    @Column(name = "start_date")
+    private LocalDate startDate;
+
+    @Column(name = "end_date")
+    private LocalDate endDate;
+
+    @Column(name = "open_time")
+    private LocalTime openTime;
+
+    @Column(name = "close_time")
+    private LocalTime closeTime;
 
     // 컬렉션 어노태이션으로 tag 테이블을 만들고 매핑함 (필드로 존재x)
     @ElementCollection(targetClass = Tag.class) // 컬렉션(List, Set 등)을 별도의 테이블에 저장하기 위한 어노테이션
@@ -44,9 +55,16 @@ public class Exhibition extends BaseTimeEntity {
     @Column(name = "views")
     private String views; // 조회수
 
-    @Column(name = "imgUrl")
-    private String imgUrl; // 작품 이미지 url
+        @ElementCollection
+    @CollectionTable(
+            name = "exhibition_images",
+            joinColumns = @JoinColumn(name = "exhibition_id")
+    )
+    @Column(name = "image_url")
+    private List<String> imageUrls; // 이미지 URL 리스트
 
+//    INSERT INTO exhibition
+//            (title, operating_day, address, gallery_name, operating_hour, image_urls, artist, description)
     @Column(name = "galleryName")
     private String galleryName; // 갤러리 명
 
