@@ -1,6 +1,6 @@
-package com.skthon.sixthsensebe.global.s3.exception;
+package com.be.pbl.global.s3.exception;
 
-import com.skthon.sixthsensebe.global.exception.model.BaseErrorCode;
+import com.be.pbl.global.exception.model.BaseErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

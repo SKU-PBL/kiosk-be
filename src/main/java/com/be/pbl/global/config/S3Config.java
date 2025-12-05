@@ -1,4 +1,4 @@
-package com.skthon.sixthsensebe.global.config;
+package com.be.pbl.global.config;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSCredentialsProvider;
@@ -30,17 +30,8 @@ public class S3Config {
   @Value("${cloud.aws.s3.bucket}")
   private String bucket;
 
-  @Value("${cloud.aws.s3.path.jobposting}")
-  private String jobposting;
-
-  @Value("${cloud.aws.s3.path.introduction}")
-  private String introduction;
-
-  @Value("${cloud.aws.s3.path.profile}")
-  private String profile;
-
-  @Value("${cloud.aws.s3.path.education}")
-  private String education;
+  @Value("${cloud.aws.s3.path.exhibition}")
+  private String exhibition;
 
   @PostConstruct
   public void init() {
