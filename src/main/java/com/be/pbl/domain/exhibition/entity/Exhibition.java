@@ -56,7 +56,7 @@ public class Exhibition extends BaseTimeEntity {
     private List<Tag> tags; // 작품 태그
 
     @Column(name = "views")
-    private String views; // 조회수
+    private int views; // 조회수
 
         @ElementCollection
     @CollectionTable(

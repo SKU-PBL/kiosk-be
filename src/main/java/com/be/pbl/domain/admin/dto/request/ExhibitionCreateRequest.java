@@ -48,7 +48,7 @@ public class ExhibitionCreateRequest {
     private List<Tag> tags;
 
     @Schema(description = "조회수 (기본값: 0)", example = "0")
-    private String views;
+    private int views;
 
     @Schema(description = "이미지 URL 리스트",
         example = "[\"https://www.insaartcenter.com/data/file/exhibition_current/f908992e10ec9c87f45e0f975130eaa9_XU48dzVM_63cc0f9944eb4da15b1a8f18eea32a1c941c3d25.jpg\", " +

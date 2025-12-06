@@ -42,7 +42,7 @@ public class AdminExhibitionServiceImpl implements AdminExhibitionService {
                     .openTime(request.getOpenTime())
                     .closeTime(request.getCloseTime())
                     .tags(request.getTags())
-                    .views(request.getViews() != null ? request.getViews() : "0")
+                    .views(request.getViews())
                     .imageUrls(request.getImageUrls())
                     .galleryName(request.getGalleryName())
                     .phoneNum(request.getPhoneNum())
