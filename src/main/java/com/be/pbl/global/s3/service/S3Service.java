@@ -16,6 +16,7 @@ import com.be.pbl.global.s3.exception.S3ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -110,6 +111,7 @@ public class S3Service {
     }
 
     // Exhibition ID로 조회하여 모든 이미지 URL을 S3로 업로드
+    @Transactional
     public S3Response uploadExhibitionImages(PathName pathName, Long exhibitionId) {
         log.info("전시회 ID {} 이미지 S3 업로드 시작", exhibitionId);
 
@@ -117,7 +119,10 @@ public class S3Service {
         Exhibition exhibition = exhibitionRepository.findById(exhibitionId)
             .orElseThrow(() -> new CustomException(ExhibitionErrorCode.EXHIBITION_NOT_FOUND));
 
-        if (!exhibition.getIsS3Upload()) {
+        // 현재 S3 업로드 상태 로깅
+        log.info("전시회 ID {}: 현재 isS3Upload 값 = {}", exhibitionId, exhibition.isS3Upload());
+
+        if (!exhibition.isS3Upload()) {
             List<String> imageUrls = exhibition.getImageUrls();
 
             if (imageUrls == null || imageUrls.isEmpty()) {
@@ -139,14 +144,16 @@ public class S3Service {
             // 모든 이미지 URL을 S3에 업로드
             List<String> s3Urls = imageUrls.stream()
                 .map(url -> {
+                    // 이미 S3 URL인 경우 재업로드 스킵
+                    if (url.contains("amazonaws.com") || url.contains("s3")) {
+                        log.info("이미 S3 URL입니다. 스킵: {}", url);
+                        successCount.incrementAndGet();
+                        return url;
+                    }
+
                     try {
                         String s3Url = uploadSingleImageFromUrl(pathName, url);
-                        // S3 URL인지 확인 (성공 여부 판단)
-                        if (s3Url.contains("amazonaws.com") || s3Url.contains("s3")) {
-                            successCount.incrementAndGet();
-                        } else {
-                            failCount.incrementAndGet();
-                        }
+                        successCount.incrementAndGet();
                         return s3Url;
                     } catch (Exception e) {
                         log.error("이미지 업로드 실패. URL 유지: {}", url, e);
