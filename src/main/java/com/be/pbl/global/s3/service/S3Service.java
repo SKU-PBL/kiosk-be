@@ -122,74 +122,66 @@ public class S3Service {
         // 현재 S3 업로드 상태 로깅
         log.info("전시회 ID {}: 현재 isS3Upload 값 = {}", exhibitionId, exhibition.isS3Upload());
 
-        if (!exhibition.isS3Upload()) {
-            List<String> imageUrls = exhibition.getImageUrls();
+        // 이미 S3에 업로드된 경우 예외 발생
+        if (exhibition.isS3Upload()) {
+            log.error("전시회 ID {}: 이미 S3에 업로드되었습니다.", exhibitionId);
+            throw new CustomException(S3ErrorCode.ALREADY_UPLOAD_TO_S3);
+        }
 
-            if (imageUrls == null || imageUrls.isEmpty()) {
-                log.warn("전시회 ID {}: 업로드할 이미지가 없습니다.", exhibitionId);
-                return S3Response.builder()
-                    .exhibitionId(exhibitionId)
-                    .s3Urls(List.of())
-                    .successCount(0)
-                    .failCount(0)
-                    .build();
-            }
+        List<String> imageUrls = exhibition.getImageUrls();
 
-            log.info("전시회 ID {}: {} 개의 이미지 업로드 시작", exhibitionId, imageUrls.size());
-
-            // 성공/실패 카운트 (원자적 연산 -> 스레드 안정성)
-            AtomicInteger successCount = new AtomicInteger(0);
-            AtomicInteger failCount = new AtomicInteger(0);
-
-            // 모든 이미지 URL을 S3에 업로드
-            List<String> s3Urls = imageUrls.stream()
-                .map(url -> {
-                    // 이미 S3 URL인 경우 재업로드 스킵
-                    if (url.contains("amazonaws.com") || url.contains("s3")) {
-                        log.info("이미 S3 URL입니다. 스킵: {}", url);
-                        successCount.incrementAndGet();
-                        return url;
-                    }
-
-                    try {
-                        String s3Url = uploadSingleImageFromUrl(pathName, url);
-                        successCount.incrementAndGet();
-                        return s3Url;
-                    } catch (Exception e) {
-                        log.error("이미지 업로드 실패. URL 유지: {}", url, e);
-                        failCount.incrementAndGet();
-                        return url; // 실패 시 원본 URL 유지
-                    }
-                })
-                .collect(Collectors.toList());
-
-            log.info("전시회 ID {}: 이미지 업로드 완료. 성공: {}, 실패: {}",
-                exhibitionId, successCount.get(), failCount.get());
-
-            // 업로드 성공 후 Exhibition 엔티티 업데이트
-            exhibition.updateImageUrls(s3Urls); // S3 URL로 업데이트
-            exhibition.updateIsS3Upload(true); // 업로드 플래그 업데이트
-            exhibitionRepository.save(exhibition);
-
+        if (imageUrls == null || imageUrls.isEmpty()) {
+            log.warn("전시회 ID {}: 업로드할 이미지가 없습니다.", exhibitionId);
             return S3Response.builder()
                 .exhibitionId(exhibitionId)
-                .s3Urls(s3Urls)
-                .successCount(successCount.get())
-                .failCount(failCount.get())
-                .build();
-        } else {
-            // 이미 S3에 업로드된 경우
-            log.info("전시회 ID {}: 이미 S3에 업로드되었습니다.", exhibitionId);
-
-            List<String> existingUrls = exhibition.getImageUrls();
-
-            return S3Response.builder()
-                .exhibitionId(exhibitionId)
-                .s3Urls(existingUrls != null ? existingUrls : List.of())
-                .successCount(existingUrls != null ? existingUrls.size() : 0)
+                .s3Urls(List.of())
+                .successCount(0)
                 .failCount(0)
                 .build();
         }
+
+        log.info("전시회 ID {}: {} 개의 이미지 업로드 시작", exhibitionId, imageUrls.size());
+
+        // 성공/실패 카운트 (원자적 연산 -> 스레드 안정성)
+        AtomicInteger successCount = new AtomicInteger(0);
+        AtomicInteger failCount = new AtomicInteger(0);
+
+        // 모든 이미지 URL을 S3에 업로드
+        List<String> s3Urls = imageUrls.stream()
+            .map(url -> {
+                // 이미 S3 URL인 경우 재업로드 스킵
+                if (url.contains("amazonaws.com") || url.contains("s3")) {
+                    log.info("이미 S3 URL입니다. 스킵: {}", url);
+                    successCount.incrementAndGet();
+                    return url;
+                }
+
+                try {
+                    String s3Url = uploadSingleImageFromUrl(pathName, url);
+                    successCount.incrementAndGet();
+                    return s3Url;
+                } catch (Exception e) {
+                    log.error("이미지 업로드 실패. URL 유지: {}", url, e);
+                    failCount.incrementAndGet();
+                    return url; // 실패 시 원본 URL 유지
+                }
+            })
+            .collect(Collectors.toList());
+
+        log.info("전시회 ID {}: 이미지 업로드 완료. 성공: {}, 실패: {}",
+            exhibitionId, successCount.get(), failCount.get());
+
+        // 업로드 성공 후 Exhibition 엔티티 업데이트
+        exhibition.updateImageUrls(s3Urls); // S3 URL로 업데이트
+        exhibition.updateIsS3Upload(true); // 업로드 플래그 업데이트
+        exhibitionRepository.save(exhibition);
+
+        return S3Response.builder()
+            .exhibitionId(exhibitionId)
+            .s3Urls(s3Urls)
+            .successCount(successCount.get())
+            .failCount(failCount.get())
+            .build();
     }
 
     // Exhibition의 이미지 URL 리스트를 S3로 마이그레이션 (AdminExhibitionService에서 사용)
