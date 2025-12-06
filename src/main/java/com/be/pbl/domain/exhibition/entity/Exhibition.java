@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.w3c.dom.Text;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

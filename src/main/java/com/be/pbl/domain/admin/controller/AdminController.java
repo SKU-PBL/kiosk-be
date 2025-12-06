@@ -40,19 +40,7 @@ public class AdminController {
         return ResponseEntity.ok(BaseResponse.success("전시회가 성공적으로 생성되었습니다.", response));
     }
 
-    /*@PostMapping("/migrate-exhibition-images")
-    @Operation(
-        summary = "전시회 이미지 S3 마이그레이션",
-        description = "DB에 저장된 외부 이미지 URL을 S3에 업로드하고 URL을 변경합니다. 이미 S3 URL인 경우 스킵됩니다."
-    )
-    public ResponseEntity<BaseResponse<String>> migrateExhibitionImages() {
-        log.info("전시회 이미지 S3 마이그레이션 API 호출");
-
-        adminExhibitionService.migrateAllExhibitionImagesToS3();
-        return ResponseEntity.ok(BaseResponse.success("전시회 이미지 S3 마이그레이션이 완료되었습니다.", "SUCCESS"));
-    }*/
-
-    @PostMapping("/uplaodToS3")
+    @PostMapping("/uploadToS3")
     @Operation(
         summary = "전시회 이미지 url s3 업로드",
         description = "전시회 이미지 url s3로 동기화"
