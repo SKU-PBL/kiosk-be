@@ -1,14 +1,13 @@
 package com.be.pbl.domain.admin.controller;
 
 import com.be.pbl.domain.admin.dto.request.ExhibitionCreateRequest;
-import com.be.pbl.domain.admin.service.AdminExhibitionService;
+import com.be.pbl.domain.admin.service.AdminService;
 import com.be.pbl.domain.exhibition.dto.response.ExhibitionInfoResponse;
 import com.be.pbl.global.response.BaseResponse;
 import com.be.pbl.global.s3.PathName;
 import com.be.pbl.global.s3.dto.response.S3Response;
 import com.be.pbl.global.s3.service.S3Service;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class AdminController {
 
-    private final AdminExhibitionService adminExhibitionService;
+    private final AdminService adminExhibitionService;
     private final S3Service s3Service;
 
     @PostMapping("/exhibitions")

@@ -7,19 +7,16 @@ import com.be.pbl.domain.exhibition.exception.ExhibitionErrorCode;
 import com.be.pbl.domain.exhibition.mapper.ExhibitionMapper;
 import com.be.pbl.domain.exhibition.repository.ExhibitionRepository;
 import com.be.pbl.global.exception.CustomException;
-import com.be.pbl.global.s3.PathName;
 import com.be.pbl.global.s3.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class AdminExhibitionServiceImpl implements AdminExhibitionService {
+public class AdminExhibitionServiceImpl implements AdminService {
 
     private final ExhibitionRepository exhibitionRepository;
     private final ExhibitionMapper exhibitionMapper;
