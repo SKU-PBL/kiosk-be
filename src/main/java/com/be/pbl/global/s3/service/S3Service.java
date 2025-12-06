@@ -5,20 +5,26 @@ import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ListObjectsV2Request;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.be.pbl.domain.exhibition.entity.Exhibition;
+import com.be.pbl.domain.exhibition.exception.ExhibitionErrorCode;
+import com.be.pbl.domain.exhibition.repository.ExhibitionRepository;
 import com.be.pbl.global.config.S3Config;
 import com.be.pbl.global.exception.CustomException;
 import com.be.pbl.global.s3.PathName;
+import com.be.pbl.global.s3.dto.response.S3Response;
 import com.be.pbl.global.s3.exception.S3ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayInputStream;
-import java.util.Base64;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Function;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,74 +33,151 @@ import java.util.stream.Collectors;
 public class S3Service {
     private final AmazonS3 amazonS3;
     private final S3Config s3Config;
+    private final ExhibitionRepository exhibitionRepository;
 
-    public <T> T uploadImage(PathName pathName, MultipartFile file, T entity,
-                             Function<String, T> s3KeySetter) {
-
-        String s3Url = uploadFile(pathName, file);
-        return s3KeySetter.apply(s3Url);
-    }
-
-    // s3에 이미지를 업로드하고 s3Url을 반환
-    public String uploadFile(PathName pathName, MultipartFile file) {
-
-        validateFile(file);
-
-        String keyName = createKeyName(pathName);
-
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentLength(file.getSize());
-        metadata.setContentType(file.getContentType()); // 파일의 MIME 타입 (ex. application/pdf, image/png)
+    // 단일 URL에서 이미지를 다운로드하여 S3에 업로드
+    private String uploadSingleImageFromUrl(PathName pathName, String imageUrl) {
+        HttpURLConnection connection = null;
+        InputStream inputStream = null;
 
         try {
-            amazonS3.putObject(
-                new PutObjectRequest(s3Config.getBucket(), keyName, file.getInputStream(), metadata));
-            return amazonS3.getUrl(s3Config.getBucket(), keyName).toString(); // s3 객체 url 반환
-        } catch (Exception e) {
-            log.error("S3 upload 중 오류 발생", e);
+            // URL 연결
+            URL url = new URL(imageUrl);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(10000); // 10초 타임아웃
+            connection.setReadTimeout(10000);
+            connection.setRequestProperty("User-Agent", "Mozilla/5.0"); // User-Agent 설정
+
+            int responseCode = connection.getResponseCode();
+            if (responseCode != HttpURLConnection.HTTP_OK) {
+                log.error("이미지 다운로드 실패. HTTP 응답 코드: {}, URL: {}", responseCode, imageUrl);
+                throw new CustomException(S3ErrorCode.FILE_SERVER_ERROR);
+            }
+
+            // Content-Type 확인
+            String contentType = connection.getContentType();
+            if (contentType == null || !contentType.startsWith("image/")) {
+                log.error("이미지 파일이 아닙니다. Content-Type: {}, URL: {}", contentType, imageUrl);
+                throw new CustomException(S3ErrorCode.FILE_TYPE_INVALID);
+            }
+
+            // Content-Length 확인 (파일 크기 제한 5MB)
+            int contentLength = connection.getContentLength();
+            if (contentLength > 5 * 1024 * 1024) {
+                log.error("파일 크기가 너무 큽니다. Size: {} bytes, URL: {}", contentLength, imageUrl);
+                throw new CustomException(S3ErrorCode.FILE_SIZE_INVALID);
+            }
+
+            // 이미지 다운로드
+            inputStream = connection.getInputStream();
+
+            // S3에 업로드
+            String keyName = createKeyName(pathName);
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentType(contentType);
+            if (contentLength > 0) {
+                metadata.setContentLength(contentLength);
+            }
+
+            amazonS3.putObject(new PutObjectRequest(s3Config.getBucket(), keyName, inputStream, metadata));
+            String s3Url = amazonS3.getUrl(s3Config.getBucket(), keyName).toString();
+
+            log.info("이미지 마이그레이션 성공. 원본: {}, S3: {}", imageUrl, s3Url);
+            return s3Url;
+
+        } catch (IOException e) {
+            log.error("이미지 다운로드 실패. URL: {}", imageUrl, e);
             throw new CustomException(S3ErrorCode.FILE_SERVER_ERROR);
+        } catch (CustomException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("S3 업로드 실패. URL: {}", imageUrl, e);
+            throw new CustomException(S3ErrorCode.FILE_SERVER_ERROR);
+        } finally {
+            // 리소스 정리
+            try {
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+                if (connection != null) {
+                    connection.disconnect();
+                }
+            } catch (IOException e) {
+                log.error("리소스 정리 중 오류 발생", e);
+            }
         }
     }
 
+    // Exhibition ID로 조회하여 모든 이미지 URL을 S3로 업로드
+    public S3Response uploadExhibitionImages(PathName pathName, Long exhibitionId) {
+        log.info("전시회 ID {} 이미지 S3 업로드 시작", exhibitionId);
 
-    // Base64로 인코딩된 파일(주로 이미지)을 디코딩해서 AWS S3에 업로드하고
-    // 업로드 된 파일의 S3 Url을 반환하는 메서드
-    // 주로 프론트엔드에서 이미지나 파일을 Base64 문자열로 전송해오는 경우에 사용
-    public String base64UploadFile(PathName pathName, String base64Url) {
-        if (!validateBase64(base64Url)) {
-            throw new CustomException(S3ErrorCode.INVALID_BASE64);
+        // Exhibition 조회
+        Exhibition exhibition = exhibitionRepository.findById(exhibitionId)
+            .orElseThrow(() -> new CustomException(ExhibitionErrorCode.EXHIBITION_NOT_FOUND));
+
+        List<String> imageUrls = exhibition.getImageUrls();
+
+        if (imageUrls == null || imageUrls.isEmpty()) {
+            log.warn("전시회 ID {}: 업로드할 이미지가 없습니다.", exhibitionId);
+            return S3Response.builder()
+                .exhibitionId(exhibitionId)
+                .s3Urls(List.of())
+                .successCount(0)
+                .failCount(0)
+                .build();
         }
 
-        String base64Data = base64Url;
-        String contentType = "image/png";
+        log.info("전시회 ID {}: {} 개의 이미지 업로드 시작", exhibitionId, imageUrls.size());
 
-        if (base64Url.contains(",")) {
-            String[] parts = base64Url.split(",");
-            if (parts[0].contains("data:") && parts[0].contains(";base64")) {
-                contentType = parts[0].substring(5, parts[0].indexOf(";"));
-            }
-            base64Data = parts[1];
-        }
+        // 성공/실패 카운트
+        AtomicInteger successCount = new AtomicInteger(0);
+        AtomicInteger failCount = new AtomicInteger(0);
 
-        if (contentType.isEmpty()) {
-            contentType = "image/png";
-        }
+        // 모든 이미지 URL을 S3에 업로드
+        List<String> s3Urls = imageUrls.stream()
+            .map(url -> {
+                try {
+                    String s3Url = uploadSingleImageFromUrl(pathName, url);
+                    // S3 URL인지 확인 (성공 여부 판단)
+                    if (s3Url.contains("amazonaws.com") || s3Url.contains("s3")) {
+                        successCount.incrementAndGet();
+                    } else {
+                        failCount.incrementAndGet();
+                    }
+                    return s3Url;
+                } catch (Exception e) {
+                    log.error("이미지 업로드 실패. URL 유지: {}", url, e);
+                    failCount.incrementAndGet();
+                    return url; // 실패 시 원본 URL 유지
+                }
+            })
+            .collect(Collectors.toList());
 
-        byte[] decodedBytes = Base64.getDecoder().decode(base64Data);
-        String keyName = createKeyName(pathName);
+        log.info("전시회 ID {}: 이미지 업로드 완료. 성공: {}, 실패: {}",
+                 exhibitionId, successCount.get(), failCount.get());
 
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentLength(decodedBytes.length);
-        metadata.setContentType(contentType);
+        return S3Response.builder()
+            .exhibitionId(exhibitionId)
+            .s3Urls(s3Urls)
+            .successCount(successCount.get())
+            .failCount(failCount.get())
+            .build();
+    }
 
-        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(decodedBytes)) {
-            amazonS3.putObject(
-                new PutObjectRequest(s3Config.getBucket(), keyName, inputStream, metadata));
-            return amazonS3.getUrl(s3Config.getBucket(), keyName).toString();
-        } catch (Exception e) {
-            log.error("S3 upload 중 오류 발생", e);
-            throw new CustomException(S3ErrorCode.FILE_SERVER_ERROR);
-        }
+    // Exhibition의 이미지 URL 리스트를 S3로 마이그레이션 (AdminExhibitionService에서 사용)
+    public List<String> migrateImageUrls(PathName pathName, List<String> imageUrls) {
+        return imageUrls.stream()
+            .map(url -> {
+                try {
+                    return uploadSingleImageFromUrl(pathName, url);
+                } catch (Exception e) {
+                    log.error("이미지 업로드 실패. URL 유지: {}", url, e);
+                    return url; // 실패 시 원본 URL 유지
+                }
+            })
+            .collect(Collectors.toList());
     }
 
     public String createKeyName(PathName pathName) {
@@ -156,6 +239,7 @@ public class S3Service {
         deleteFile(keyName);
     }
 
+    // 파일 존재 여부 확인
     private void existFile(String keyName) {
         if (!amazonS3.doesObjectExist(s3Config.getBucket(), keyName)) {
             throw new CustomException(S3ErrorCode.FILE_NOT_FOUND);
@@ -171,18 +255,6 @@ public class S3Service {
         String contentType = file.getContentType();
         if (contentType == null || !contentType.startsWith("image/")) {
             throw new CustomException(S3ErrorCode.FILE_TYPE_INVALID);
-        }
-    }
-
-    private boolean validateBase64(String base64Data) {
-        if (base64Data == null || base64Data.trim().isEmpty()) {
-            return false;
-        }
-        try {
-            Base64.getDecoder().decode(base64Data.contains(",") ? base64Data.split(",")[1] : base64Data);
-            return true;
-        } catch (IllegalArgumentException e) {
-            return false;
         }
     }
 }

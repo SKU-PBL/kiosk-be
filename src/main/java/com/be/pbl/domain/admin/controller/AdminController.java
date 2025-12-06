@@ -1,15 +1,20 @@
-package com.be.pbl.global.s3.controller;
+package com.be.pbl.domain.admin.controller;
 
-import com.be.pbl.domain.exhibition.service.ExhibitionService;
+import com.be.pbl.domain.admin.dto.request.ExhibitionCreateRequest;
+import com.be.pbl.domain.admin.service.AdminExhibitionService;
+import com.be.pbl.domain.exhibition.dto.response.ExhibitionInfoResponse;
 import com.be.pbl.global.response.BaseResponse;
+import com.be.pbl.global.s3.PathName;
+import com.be.pbl.global.s3.dto.response.S3Response;
+import com.be.pbl.global.s3.service.S3Service;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,9 +23,24 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class AdminController {
 
-    private final ExhibitionService exhibitionService;
+    private final AdminExhibitionService adminExhibitionService;
+    private final S3Service s3Service;
 
-    @PostMapping("/migrate-exhibition-images")
+    @PostMapping("/exhibitions")
+    @Operation(
+        summary = "전시회 생성",
+        description = "관리자가 새로운 전시회를 생성합니다."
+    )
+    public ResponseEntity<BaseResponse<ExhibitionInfoResponse>> createExhibition(
+            @Valid @RequestBody ExhibitionCreateRequest request
+    ) {
+        log.info("전시회 생성 API 호출: {}", request.getTitle());
+
+        ExhibitionInfoResponse response = adminExhibitionService.createExhibition(request);
+        return ResponseEntity.ok(BaseResponse.success("전시회가 성공적으로 생성되었습니다.", response));
+    }
+
+    /*@PostMapping("/migrate-exhibition-images")
     @Operation(
         summary = "전시회 이미지 S3 마이그레이션",
         description = "DB에 저장된 외부 이미지 URL을 S3에 업로드하고 URL을 변경합니다. 이미 S3 URL인 경우 스킵됩니다."
@@ -28,16 +48,20 @@ public class AdminController {
     public ResponseEntity<BaseResponse<String>> migrateExhibitionImages() {
         log.info("전시회 이미지 S3 마이그레이션 API 호출");
 
-        try {
-            exhibitionService.migrateAllExhibitionImagesToS3();
-            return ResponseEntity.ok(
-                BaseResponse.success("전시회 이미지 S3 마이그레이션이 완료되었습니다.", "SUCCESS")
-            );
-        } catch (Exception e) {
-            log.error("전시회 이미지 S3 마이그레이션 실패", e);
-            return ResponseEntity.internalServerError().body(
-                BaseResponse.fail("전시회 이미지 S3 마이그레이션에 실패했습니다: " + e.getMessage())
-            );
-        }
+        adminExhibitionService.migrateAllExhibitionImagesToS3();
+        return ResponseEntity.ok(BaseResponse.success("전시회 이미지 S3 마이그레이션이 완료되었습니다.", "SUCCESS"));
+    }*/
+
+    @PostMapping("/uplaodToS3")
+    @Operation(
+        summary = "전시회 이미지 url s3 업로드",
+        description = "전시회 이미지 url s3로 동기화"
+    )
+    public ResponseEntity<BaseResponse<S3Response>> uploadToS3(
+        @RequestParam PathName pathName,
+        @RequestParam Long id
+        ) {
+        S3Response response = s3Service.uploadExhibitionImages(pathName, id);
+        return ResponseEntity.ok(BaseResponse.success("s3 동기화 결과", response));
     }
 }
