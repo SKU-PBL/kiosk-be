@@ -28,7 +28,7 @@ public class SwaggerConfig {
 
     // 운영 서버
     Server prodServer = new Server();
-    prodServer.setUrl("https://api.dasijob.site");
+    prodServer.setUrl("https://api.insa-exhibition.shop");
     prodServer.setDescription("🚀 운영 서버");
 
     return new OpenAPI()

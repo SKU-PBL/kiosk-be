@@ -2,6 +2,7 @@ package com.be.pbl.domain.exhibition.service;
 
 import com.be.pbl.domain.exhibition.dto.response.ExhibitionInfoResponse;
 import com.be.pbl.domain.exhibition.dto.response.ExhibitionRecommendResponse;
+import com.be.pbl.domain.exhibition.dto.response.TopTagResponse;
 import com.be.pbl.domain.question.dto.request.QuestionAnswerListRequest;
 
 import java.util.List;
