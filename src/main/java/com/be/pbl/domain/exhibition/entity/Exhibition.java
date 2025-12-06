@@ -53,14 +53,15 @@ public class Exhibition extends BaseTimeEntity {
     private List<Tag> tags; // 작품 태그
 
     @Column(name = "views")
-    private String views; // 조회수
+    private int views; // 조회수
 
         @ElementCollection
     @CollectionTable(
             name = "exhibition_images",
             joinColumns = @JoinColumn(name = "exhibition_id")
     )
-    @Column(name = "image_url")
+
+    @Column(name = "image_url", length=500)
     private List<String> imageUrls; // 이미지 URL 리스트
 
 //    INSERT INTO exhibition
