@@ -73,4 +73,17 @@ public class Exhibition extends BaseTimeEntity {
 
     @Column(name = "phoneNum")
     private String phoneNum; // 갤러리 전회번호
+
+    @Column(name = "isS3Upload", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean isS3Upload = false; // img url s3로 업로드 되었는지 여부
+
+    // S3 업로드 상태 업데이트 메서드
+    public void updateIsS3Upload(Boolean isS3Upload) {
+        this.isS3Upload = isS3Upload;
+    }
+
+    // 이미지 URL 리스트 업데이트 메서드
+    public void updateImageUrls(List<String> imageUrls) {
+        this.imageUrls = imageUrls;
+    }
 }
