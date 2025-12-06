@@ -60,7 +60,8 @@ public class Exhibition extends BaseTimeEntity {
             name = "exhibition_images",
             joinColumns = @JoinColumn(name = "exhibition_id")
     )
-    @Column(name = "image_url")
+
+    @Column(name = "image_url", length=500)
     private List<String> imageUrls; // 이미지 URL 리스트
 
 //    INSERT INTO exhibition
