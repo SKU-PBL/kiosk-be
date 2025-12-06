@@ -43,13 +43,13 @@ public class AdminController {
     @PostMapping("/uploadToS3")
     @Operation(
         summary = "전시회 이미지 url s3 업로드",
-        description = "전시회 이미지 url s3로 동기화"
+        description = "isS3Upload가 false인 모든 전시회 이미지를 s3로 업로드"
     )
     public ResponseEntity<BaseResponse<S3Response>> uploadToS3(
-        @RequestParam PathName pathName,
-        @RequestParam Long id
+        @RequestParam PathName pathName
         ) {
-        S3Response response = s3Service.uploadExhibitionImages(pathName, id);
+        log.info("S3 업로드 API 호출: pathName={}", pathName);
+        S3Response response = s3Service.uploadExhibitionImages(pathName);
         return ResponseEntity.ok(BaseResponse.success("s3 동기화 결과", response));
     }
 }
