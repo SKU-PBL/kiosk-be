@@ -53,7 +53,7 @@ public class Exhibition extends BaseTimeEntity {
     @CollectionTable(name = "tag", joinColumns = @JoinColumn(name = "exhibition_id"))
     @Enumerated(EnumType.STRING)
     @Column(name = "tags")
-    private List<Tag> tags; // 작품 태그
+    private List<Tag> tags; // 전시회 태그
 
     @Column(name = "views")
     private int views; // 조회수
@@ -88,4 +88,10 @@ public class Exhibition extends BaseTimeEntity {
     public void updateImageUrls(List<String> imageUrls) {
         this.imageUrls = imageUrls;
     }
+
+    // 전시회 태그 업데이트 메서드
+    public void updateTag(List<Tag> tags) {
+        this.tags = tags;
+    }
+
 }

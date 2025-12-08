@@ -12,10 +12,13 @@ import lombok.NoArgsConstructor;
 @Schema(title = "TagResponse DTO", description = "전시회 정보기반 태그 응답 DTO")
 public class TagResponse {
 
+    @Schema(description = "전시회 id")
+    private Long id;
+
     @Schema(description = "전시회 태그")
     private Tag tag; // 추후에 enum 타입으로 변경
 
     @Schema(description = "전시회 태그 설명")
-    private String tagDescription = tag.getDescription();
+    private String tagDescription;
 
 }

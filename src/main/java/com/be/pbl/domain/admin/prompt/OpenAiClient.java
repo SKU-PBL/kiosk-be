@@ -84,7 +84,27 @@ public class OpenAiClient {
         // system 메세지 작성 : AI 역할 지시
         Message systemMessage =
             new Message(
-                "system", "");
+                "system", "너는 전시회 설명을 분석해 아래에 나열된 태그 목록 중에서 \n" +
+                "해당 전시에 가장 잘 어울리는 태그를 최대 3개까지 선택하는 전문 분류 모델이다.\n" +
+                "\n" +
+                "반드시 아래 태그 목록 중에서만 선택하고, 새 태그를 생성하지 않는다.\n" +
+                "선택 가능한 태그 목록:\n" +
+                "- MODERN(현대적) \n" +
+                "- TRADITIONAL(전통적)\n" +
+                "- ABSTRACT(추상적)\n" +
+                "- REALISTIC(사실적)\n" +
+                "- FANCY(화려한)\n" +
+                "- UNDERSTATED(절제된)\n" +
+                "- BRIGHT(밝은)\n" +
+                "- DARK(어두운)\n" +
+                "- NATURAL(자연적)\n" +
+                "- ARTIFICIAL(인공적)\n" +
+                "\n" +
+                "선택 기준:\n" +
+                "- 설명의 분위기, 색감, 표현 방식, 시대감 등을 종합적으로 판단한다.\n" +
+                "- 반드시 1~3개의 태그만 선택한다.\n" +
+                "- 태그 이름은 ENUM 키 값 그대로 반환한다. (예: BRIGHT, MODERN, ARTIFICIAL)" +
+                "- 출력 형식은 한 줄로 태그만 출력하고 태그는 쉼표(,)로 구분한다.");
 
         // user 메세지 작성 : 사용자 질문
         Message userMessage = new Message("user", prompt);

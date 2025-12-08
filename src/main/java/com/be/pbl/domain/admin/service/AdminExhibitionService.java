@@ -1,6 +1,7 @@
 package com.be.pbl.domain.admin.service;
 
 import com.be.pbl.domain.admin.dto.request.ExhibitionCreateRequest;
+import com.be.pbl.domain.admin.dto.response.TagResponse;
 import com.be.pbl.domain.exhibition.dto.response.ExhibitionInfoResponse;
 import com.be.pbl.domain.exhibition.entity.Exhibition;
 import com.be.pbl.domain.exhibition.exception.ExhibitionErrorCode;
@@ -13,16 +14,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class AdminExhibitionServiceImpl implements AdminService {
+public class AdminExhibitionService {
 
     private final ExhibitionRepository exhibitionRepository;
     private final ExhibitionMapper exhibitionMapper;
     private final S3Service s3Service;
 
-    @Override
     @Transactional
     public ExhibitionInfoResponse createExhibition(ExhibitionCreateRequest request) {
         log.info("전시회 생성 시작: {}", request.getTitle());
