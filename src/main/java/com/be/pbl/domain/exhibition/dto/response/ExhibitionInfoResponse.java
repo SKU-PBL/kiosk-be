@@ -1,14 +1,11 @@
 package com.be.pbl.domain.exhibition.dto.response;
 
-import com.be.pbl.domain.exhibition.entity.Tag;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.Column;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -50,7 +47,7 @@ public class ExhibitionInfoResponse {
     private String operatingNotice;*/
 
     @Schema(description = "작품 태그")
-    private List<ExhibitionTag> tags;
+    private List<ExhibitionTagResponse> tags;
 
     @Schema(description = "조회수")
     private int views;
