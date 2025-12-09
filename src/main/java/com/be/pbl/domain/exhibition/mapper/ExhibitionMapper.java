@@ -2,7 +2,7 @@ package com.be.pbl.domain.exhibition.mapper;
 
 import com.be.pbl.domain.exhibition.dto.request.ExhibitionPatchRequest;
 import com.be.pbl.domain.exhibition.dto.response.ExhibitionInfoResponse;
-import com.be.pbl.domain.exhibition.dto.response.ExhibitionTag;
+import com.be.pbl.domain.exhibition.dto.response.ExhibitionTagResponse;
 import com.be.pbl.domain.exhibition.entity.Exhibition;
 import com.be.pbl.domain.exhibition.entity.Tag;
 import org.springframework.stereotype.Component;
@@ -17,19 +17,25 @@ public class ExhibitionMapper {
         return ExhibitionInfoResponse.builder()
             .id(exhibition.getId())
             .title(exhibition.getTitle())
+            .description(exhibition.getDescription())
             .address(exhibition.getAddress())
             .author(exhibition.getAuthor())
             .startDate(exhibition.getStartDate())
             .endDate(exhibition.getEndDate())
             .openTime(exhibition.getOpenTime())
             .closeTime(exhibition.getCloseTime())
+            //.operatingNotice(exhibition.getOperatingNotice()
             .tags(toExhibitionTags(exhibition.getTags()))
+            .views(exhibition.getViews())
+            .imagesUrls(exhibition.getImageUrls())
+            .galleryName(exhibition.getGalleryName())
+            .phoneNum(exhibition.getPhoneNum())
             .build();
     }
 
-    private List<ExhibitionTag> toExhibitionTags(List<Tag> tags){
+    private List<ExhibitionTagResponse> toExhibitionTags(List<Tag> tags){
         return tags.stream()
-            .map(tag -> ExhibitionTag.builder()
+            .map(tag -> ExhibitionTagResponse.builder()
                 .tagName(tag.name())
                 .tagDescription(tag.getDescription())
                 .build())

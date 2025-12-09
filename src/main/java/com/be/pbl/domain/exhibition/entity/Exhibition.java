@@ -79,6 +79,10 @@ public class Exhibition extends BaseTimeEntity {
     @Column(name = "phoneNum")
     private String phoneNum; // 갤러리 전회번호
 
+    @Builder.Default
+    @Column(name = "isS3Upload", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean isS3Upload = false; // img url s3로 업로드 되었는지 여부
+
     public void setTitle(String title) {
         this.title = title;
     }
@@ -126,13 +130,9 @@ public class Exhibition extends BaseTimeEntity {
     public void setGalleryName(String galleryName) {
         this.galleryName = galleryName;
     }
-
     public void setPhoneNum(String phoneNum) {
         this.phoneNum = phoneNum;
     }
-    @Builder.Default
-    @Column(name = "isS3Upload", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
-    private boolean isS3Upload = false; // img url s3로 업로드 되었는지 여부
 
     // S3 업로드 상태 업데이트 메서드
     public void updateIsS3Upload(boolean isS3Upload) {
@@ -147,7 +147,11 @@ public class Exhibition extends BaseTimeEntity {
     // 전시회 태그 업데이트 메서드
     public void updateTag(List<Tag> tags) {
         this.tags = tags;
+    }
 
+    // 조회수 업데이트 메서드
+    public void updateViews(int views) {
+        this.views = views;
     }
 
 }

@@ -24,7 +24,7 @@ public class ExhibitionController {
     private final ExhibitionService exhibitionService;
 
     @GetMapping("/exhibition/{id}")
-    @Operation(summary = "전시회 정보 단일 조회", description = "전시회id로 특정 전시회 정보 조회")
+    @Operation(summary = "전시회 정보 단일 조회", description = "전시회id로 특정 전시회 정보 조회 후 조회수 +1 증가")
     public ResponseEntity<BaseResponse<ExhibitionInfoResponse>> getExhibitionById(@PathVariable Long id) {
         ExhibitionInfoResponse response = exhibitionService.getExhibition(id);
         return ResponseEntity.ok(BaseResponse.success("특정 전시회 정보 조회에 성공했습니다.",response));
