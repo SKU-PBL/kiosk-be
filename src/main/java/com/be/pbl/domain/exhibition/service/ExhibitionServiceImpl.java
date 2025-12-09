@@ -36,13 +36,19 @@ public class ExhibitionServiceImpl implements ExhibitionService {
     private final ExhibitionMapper exhibitionMapper;
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public ExhibitionInfoResponse getExhibition(Long id) {
 
         try {
-            log.info("전시회 정보 조회 {} ", id);
+            log.info("전시회 정보 조회 id = {} ", id);
             Exhibition exhibition = exhibitionRepository.findById(id)
                     .orElseThrow(() -> new CustomException(ExhibitionErrorCode.EXHIBITION_NOT_FOUND));
+
+            // 조회수 증가
+            int increaseViews = exhibition.getViews() + 1;
+            exhibition.updateViews(increaseViews);
+            log.info("전시회 ID {} 조회수 증가: {} -> {}", id, exhibition.getViews() - 1, exhibition.getViews());
+
             return exhibitionMapper.toExhibitionResponse(exhibition);
         } catch (Exception e) {
             log.error("전시회 정보 조회 실패");

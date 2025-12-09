@@ -147,7 +147,11 @@ public class Exhibition extends BaseTimeEntity {
     // 전시회 태그 업데이트 메서드
     public void updateTag(List<Tag> tags) {
         this.tags = tags;
+    }
 
+    // 조회수 업데이트 메서드
+    public void updateViews(int views) {
+        this.views = views;
     }
 
 }
