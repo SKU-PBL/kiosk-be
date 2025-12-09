@@ -17,13 +17,19 @@ public class ExhibitionMapper {
         return ExhibitionInfoResponse.builder()
             .id(exhibition.getId())
             .title(exhibition.getTitle())
+            .description(exhibition.getDescription())
             .address(exhibition.getAddress())
             .author(exhibition.getAuthor())
             .startDate(exhibition.getStartDate())
             .endDate(exhibition.getEndDate())
             .openTime(exhibition.getOpenTime())
             .closeTime(exhibition.getCloseTime())
+            //.operatingNotice(exhibition.getOperatingNotice()
             .tags(toExhibitionTags(exhibition.getTags()))
+            .views(exhibition.getViews())
+            .imagesUrls(exhibition.getImageUrls())
+            .galleryName(exhibition.getGalleryName())
+            .phoneNum(exhibition.getPhoneNum())
             .build();
     }
 
