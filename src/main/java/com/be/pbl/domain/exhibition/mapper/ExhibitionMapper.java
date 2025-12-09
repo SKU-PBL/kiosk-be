@@ -1,5 +1,6 @@
 package com.be.pbl.domain.exhibition.mapper;
 
+import com.be.pbl.domain.exhibition.dto.request.ExhibitionPatchRequest;
 import com.be.pbl.domain.exhibition.dto.response.ExhibitionInfoResponse;
 import com.be.pbl.domain.exhibition.dto.response.ExhibitionTag;
 import com.be.pbl.domain.exhibition.entity.Exhibition;
@@ -39,4 +40,20 @@ public class ExhibitionMapper {
                 .map(this::toExhibitionResponse)
                 .toList();
     }
+    public void updateFromPatch(Exhibition exhibition, ExhibitionPatchRequest request) {
+        if (request.getTitle() != null) exhibition.setTitle(request.getTitle());
+        if (request.getDescription() != null) exhibition.setDescription(request.getDescription());
+        if (request.getAuthor() != null) exhibition.setAuthor(request.getAuthor());
+        if (request.getStartDate() != null) exhibition.setStartDate(request.getStartDate());
+        if (request.getEndDate() != null) exhibition.setEndDate(request.getEndDate());
+        if (request.getOpenTime() != null) exhibition.setOpenTime(request.getOpenTime());
+        if (request.getCloseTime() != null) exhibition.setCloseTime(request.getCloseTime());
+        if (request.getTags() != null) exhibition.setTags(request.getTags());
+        if (request.getImageUrls() != null) exhibition.setImageUrls(request.getImageUrls());
+        if (request.getGenre() != null) exhibition.setGenre(request.getGenre());
+        if (request.getAddress() != null) exhibition.setAddress(request.getAddress());
+        if (request.getGalleryName() != null) exhibition.setGalleryName(request.getGalleryName());
+        if (request.getPhoneNum() != null) exhibition.setPhoneNum(request.getPhoneNum());
+    }
+
 }

@@ -55,6 +55,10 @@ public class Exhibition extends BaseTimeEntity {
     @Column(name = "tags")
     private List<Tag> tags; // 전시회 태그
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "genre", nullable = true)
+    private Genre genre; // 장르 (ex. 미술, 공예, 미디어, 전통문화)
+
     @Column(name = "views")
     private int views; // 조회수
 
@@ -75,6 +79,57 @@ public class Exhibition extends BaseTimeEntity {
     @Column(name = "phoneNum")
     private String phoneNum; // 갤러리 전회번호
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
+
+    public void setOpenTime(LocalTime openTime) {
+        this.openTime = openTime;
+    }
+
+    public void setCloseTime(LocalTime closeTime) {
+        this.closeTime = closeTime;
+    }
+
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
+    }
+
+    public void setGenre(Genre genre) {
+        this.genre = genre;
+    }
+
+    public void setImageUrls(List<String> imageUrls) {
+        this.imageUrls = imageUrls;
+    }
+
+    public void setGalleryName(String galleryName) {
+        this.galleryName = galleryName;
+    }
+
+    public void setPhoneNum(String phoneNum) {
+        this.phoneNum = phoneNum;
+
     @Builder.Default
     @Column(name = "isS3Upload", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean isS3Upload = false; // img url s3로 업로드 되었는지 여부
@@ -92,6 +147,7 @@ public class Exhibition extends BaseTimeEntity {
     // 전시회 태그 업데이트 메서드
     public void updateTag(List<Tag> tags) {
         this.tags = tags;
+
     }
 
 }
