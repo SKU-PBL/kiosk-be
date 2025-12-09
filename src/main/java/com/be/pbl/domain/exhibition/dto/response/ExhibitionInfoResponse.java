@@ -1,6 +1,7 @@
 package com.be.pbl.domain.exhibition.dto.response;
 
 import com.be.pbl.domain.exhibition.entity.Tag;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import lombok.Builder;
@@ -34,10 +35,12 @@ public class ExhibitionInfoResponse {
     @Schema(description = "전시 종료일")
     private LocalDate endDate;
 
-    @Schema(description = "시작 시간")
+    @JsonFormat(pattern = "HH:mm")
+    @Schema(description = "시작 시간", example = "10:00")
     private LocalTime openTime;
 
-    @Schema(description = "마감 시간")
+    @JsonFormat(pattern = "HH:mm")
+    @Schema(description = "마감 시간", example = "18:00")
     private LocalTime closeTime;
 
     @Schema(description = "작품 태그")
