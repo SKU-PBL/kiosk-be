@@ -30,6 +30,14 @@ public class ExhibitionController {
         return ResponseEntity.ok(BaseResponse.success("특정 전시회 정보 조회에 성공했습니다.",response));
     }
 
+    // 조회수 영향 x
+    @GetMapping("/recommend-exhibition/{id}")
+    @Operation(summary = "이상형 월드컵 종료 후 추천된 전시회 정보 단일 조회", description = "전시회id로 특정 전시회 정보 조회(조회수 증가 없음)")
+    public ResponseEntity<BaseResponse<ExhibitionInfoResponse>> getRecommendExhibitionById(@PathVariable Long id) {
+        ExhibitionInfoResponse response = exhibitionService.getExhibitionUnaffectedViews(id);
+        return ResponseEntity.ok(BaseResponse.success("추천 받은 특정 전시회 정보 조회에 성공했습니다.",response));
+    }
+
     @GetMapping("/exhibitions")
     @Operation(summary = "전시회 정보 전체 조회", description = "전시회 정보 전체 조회")
     public ResponseEntity<BaseResponse<List<ExhibitionInfoResponse>>> getExhibition() {
