@@ -3,8 +3,10 @@ package com.be.pbl.domain.exhibition.entity;
 import com.be.pbl.global.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.w3c.dom.Text;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -12,6 +14,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "exhibition")
@@ -50,7 +53,7 @@ public class Exhibition extends BaseTimeEntity {
     @CollectionTable(name = "tag", joinColumns = @JoinColumn(name = "exhibition_id"))
     @Enumerated(EnumType.STRING)
     @Column(name = "tags")
-    private List<Tag> tags; // 작품 태그
+    private List<Tag> tags; // 전시회 태그
 
     @Enumerated(EnumType.STRING)
     @Column(name = "genre", nullable = true)
@@ -126,6 +129,25 @@ public class Exhibition extends BaseTimeEntity {
 
     public void setPhoneNum(String phoneNum) {
         this.phoneNum = phoneNum;
+
+    @Builder.Default
+    @Column(name = "isS3Upload", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean isS3Upload = false; // img url s3로 업로드 되었는지 여부
+
+    // S3 업로드 상태 업데이트 메서드
+    public void updateIsS3Upload(boolean isS3Upload) {
+        this.isS3Upload = isS3Upload;
+    }
+
+    // 이미지 URL 리스트 업데이트 메서드
+    public void updateImageUrls(List<String> imageUrls) {
+        this.imageUrls = imageUrls;
+    }
+
+    // 전시회 태그 업데이트 메서드
+    public void updateTag(List<Tag> tags) {
+        this.tags = tags;
+
     }
 
 }
