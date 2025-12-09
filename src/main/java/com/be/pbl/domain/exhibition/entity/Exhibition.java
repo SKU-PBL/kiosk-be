@@ -129,7 +129,7 @@ public class Exhibition extends BaseTimeEntity {
 
     public void setPhoneNum(String phoneNum) {
         this.phoneNum = phoneNum;
-
+    }
     @Builder.Default
     @Column(name = "isS3Upload", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean isS3Upload = false; // img url s3로 업로드 되었는지 여부
