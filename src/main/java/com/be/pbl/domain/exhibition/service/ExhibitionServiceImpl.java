@@ -1,9 +1,11 @@
 package com.be.pbl.domain.exhibition.service;
 
+import com.be.pbl.domain.exhibition.dto.request.ExhibitionPatchRequest;
 import com.be.pbl.domain.exhibition.dto.response.ExhibitionInfoResponse;
 import com.be.pbl.domain.exhibition.dto.response.ExhibitionRecommendResponse;
 import com.be.pbl.domain.exhibition.dto.response.TopTagResponse;
 import com.be.pbl.domain.exhibition.entity.Exhibition;
+import com.be.pbl.domain.exhibition.entity.Genre;
 import com.be.pbl.domain.exhibition.entity.Tag;
 import com.be.pbl.domain.exhibition.exception.ExhibitionErrorCode;
 import com.be.pbl.domain.exhibition.mapper.ExhibitionMapper;
@@ -34,13 +36,36 @@ public class ExhibitionServiceImpl implements ExhibitionService {
     private final ExhibitionMapper exhibitionMapper;
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public ExhibitionInfoResponse getExhibition(Long id) {
 
         try {
-            log.info("전시회 정보 조회 {} ", id);
+            log.info("전시회 정보 조회 id = {} ", id);
             Exhibition exhibition = exhibitionRepository.findById(id)
                     .orElseThrow(() -> new CustomException(ExhibitionErrorCode.EXHIBITION_NOT_FOUND));
+
+            // 조회수 증가
+            int increaseViews = exhibition.getViews() + 1;
+            exhibition.updateViews(increaseViews);
+            log.info("전시회 ID {} 조회수 증가: {} -> {}", id, exhibition.getViews() - 1, exhibition.getViews());
+
+            return exhibitionMapper.toExhibitionResponse(exhibition);
+        } catch (Exception e) {
+            log.error("전시회 정보 조회 실패");
+            throw new CustomException(ExhibitionErrorCode.EXHIBITION_NOT_FOUND);
+        }
+
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ExhibitionInfoResponse getExhibitionUnaffectedViews(Long id) {
+
+        try {
+            log.info("전시회 정보 조회 id = {} ", id);
+            Exhibition exhibition = exhibitionRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ExhibitionErrorCode.EXHIBITION_NOT_FOUND));
+
             return exhibitionMapper.toExhibitionResponse(exhibition);
         } catch (Exception e) {
             log.error("전시회 정보 조회 실패");
@@ -69,6 +94,31 @@ public class ExhibitionServiceImpl implements ExhibitionService {
             throw new CustomException(ExhibitionErrorCode.EXHIBITION_NOT_FOUND);
         }
     }
+    @Override
+    @Transactional(readOnly = true)
+    public List<ExhibitionInfoResponse> getExhibitionsByGenre(Genre genre) {
+        log.info("장르별 전시회 조회: {}", genre);
+        List<Exhibition> exhibitions = exhibitionRepository.findByGenre(genre);
+
+        if (exhibitions.isEmpty()) {
+            log.warn("해당 장르에 대한 전시회 없음: {}", genre);
+            throw new CustomException(ExhibitionErrorCode.EXHIBITION_BY_GENRE_EMPTY);
+        }
+
+        return exhibitions.stream()
+                .map(exhibitionMapper::toExhibitionResponse)
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public void updateExhibition(Long id, ExhibitionPatchRequest request) {
+        Exhibition exhibition = exhibitionRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ExhibitionErrorCode.EXHIBITION_NOT_FOUND));
+
+        exhibitionMapper.updateFromPatch(exhibition, request);
+    }
+
 
     // 이상형 월드컵
     @Override
