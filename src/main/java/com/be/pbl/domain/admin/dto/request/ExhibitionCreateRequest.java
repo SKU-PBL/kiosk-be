@@ -53,7 +53,7 @@ public class ExhibitionCreateRequest {
     @Schema(description = "이미지 URL 리스트",
         example = "[\"https://www.insaartcenter.com/data/file/exhibition_current/f908992e10ec9c87f45e0f975130eaa9_XU48dzVM_63cc0f9944eb4da15b1a8f18eea32a1c941c3d25.jpg\", " +
             "\"https://www.insaartcenter.com/data/file/exhibition_current/f908992e10ec9c87f45e0f975130eaa9_eJQPS3Kz_894e3d3bd08f3f7153ebc9d27d4b676538b8cb6e.jpg\"]")
-    private List<String> imageUrls;
+    private List<String> imgUrl;
 
     @Schema(description = "갤러리명", example = "국립현대미술관")
     private String galleryName;

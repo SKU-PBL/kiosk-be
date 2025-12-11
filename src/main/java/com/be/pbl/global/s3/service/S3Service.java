@@ -136,7 +136,7 @@ public class S3Service {
 
         // 각 전시회에 대해 업로드 수행
         for (Exhibition exhibition : exhibitions) {
-            List<String> imageUrls = exhibition.getImageUrls();
+            List<String> imageUrls = exhibition.getImgUrl();
 
             if (imageUrls == null || imageUrls.isEmpty()) {
                 log.warn("전시회 ID {}: 업로드할 이미지가 없습니다.", exhibition.getId());
