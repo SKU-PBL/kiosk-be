@@ -31,7 +31,8 @@ public class CorsConfig {
     log.info("=== CORS 설정 초기화 ===");
     log.info("허용된 Origins: {}", origins);
 
-    configuration.setAllowedOrigins(origins);
+    // setAllowCredentials(true)와 함께 사용하려면 setAllowedOriginPatterns 사용
+    configuration.setAllowedOriginPatterns(origins);
     // OPTIONS 메소드 추가 (CORS preflight 요청을 위해 필수)
     configuration.setAllowedMethods(
         Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
