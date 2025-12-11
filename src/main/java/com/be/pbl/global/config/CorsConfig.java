@@ -10,7 +10,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 
 @Configuration
-@Profile("local") // 로컬 환경에서만 작동(운영 환경에서는 nginx에서 처리)
 public class CorsConfig {
 
   @Value("${cors.allowed-origins}")
