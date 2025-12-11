@@ -1,5 +1,6 @@
 package com.be.pbl.global.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,8 +9,11 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Configuration
+@Slf4j
 public class CorsConfig {
 
   @Value("${cors.allowed-origins}")
@@ -19,8 +23,15 @@ public class CorsConfig {
   public UrlBasedCorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
 
-    // 쉼표로 분할해서 배열로 변환
-    configuration.setAllowedOrigins(Arrays.asList(allowedOrigins.split(",")));
+    // 쉼표로 분할하고 공백 제거 (trim)
+    List<String> origins = Arrays.stream(allowedOrigins.split(","))
+        .map(String::trim)
+        .collect(Collectors.toList());
+
+    log.info("=== CORS 설정 초기화 ===");
+    log.info("허용된 Origins: {}", origins);
+
+    configuration.setAllowedOrigins(origins);
     // OPTIONS 메소드 추가 (CORS preflight 요청을 위해 필수)
     configuration.setAllowedMethods(
         Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
@@ -31,6 +42,8 @@ public class CorsConfig {
     // 모든 경로에 대해 위의 CORS 설정을 적용
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", configuration);
+
+    log.info("CORS 설정 완료");
     return source;
   }
 }
