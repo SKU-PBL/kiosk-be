@@ -62,14 +62,8 @@ public class Exhibition extends BaseTimeEntity {
     @Column(name = "views")
     private int views; // 조회수
 
-        @ElementCollection
-    @CollectionTable(
-            name = "exhibition_images",
-            joinColumns = @JoinColumn(name = "exhibition_id")
-    )
-
-    @Column(name = "image_url", length=500)
-    private List<String> imageUrls; // 이미지 URL 리스트
+    @Column(name = "img_url", length=500)
+    private List<String> imgUrl; // 이미지 URL 리스트
 
 //    INSERT INTO exhibition
 //            (title, operating_day, address, gallery_name, operating_hour, image_urls, artist, description)
@@ -124,7 +118,7 @@ public class Exhibition extends BaseTimeEntity {
     }
 
     public void setImageUrls(List<String> imageUrls) {
-        this.imageUrls = imageUrls;
+        this.imgUrl = imageUrls;
     }
 
     public void setGalleryName(String galleryName) {
@@ -141,7 +135,7 @@ public class Exhibition extends BaseTimeEntity {
 
     // 이미지 URL 리스트 업데이트 메서드
     public void updateImageUrls(List<String> imageUrls) {
-        this.imageUrls = imageUrls;
+        this.imgUrl = imageUrls;
     }
 
     // 전시회 태그 업데이트 메서드

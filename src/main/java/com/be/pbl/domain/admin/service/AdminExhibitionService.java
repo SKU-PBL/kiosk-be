@@ -42,7 +42,7 @@ public class AdminExhibitionService {
                     .closeTime(request.getCloseTime())
                     .tags(request.getTags())
                     .views(request.getViews())
-                    .imageUrls(request.getImageUrls())
+                    .imgUrl(request.getImgUrl())
                     .galleryName(request.getGalleryName())
                     .phoneNum(request.getPhoneNum())
                     .build();

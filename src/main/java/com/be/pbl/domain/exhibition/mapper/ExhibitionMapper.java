@@ -27,7 +27,7 @@ public class ExhibitionMapper {
             //.operatingNotice(exhibition.getOperatingNotice()
             .tags(toExhibitionTags(exhibition.getTags()))
             .views(exhibition.getViews())
-            .imagesUrls(exhibition.getImageUrls())
+            .imagesUrls(exhibition.getImgUrl())
             .galleryName(exhibition.getGalleryName())
             .phoneNum(exhibition.getPhoneNum())
             .build();
