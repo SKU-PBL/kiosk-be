@@ -11,6 +11,7 @@ import com.be.pbl.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,7 @@ public class TagService {
     private final ExhibitionRepository exhibitionRepository;
 
     // 전시회 설명 기반 태그 생성하여 리스트로 변환
+    @Transactional
     public List<TagResponse> createTag() {
         log.info("=== 태그 생성 API 시작 ===");
 
