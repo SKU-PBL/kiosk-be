@@ -33,9 +33,10 @@ public class TagService {
         List<Exhibition> allExhibitions = exhibitionRepository.findAll();
         log.info("전체 전시회 수: {}", allExhibitions.size());
 
-        // Tag필드가 비어있거나 null인 데이터를 List로 저장
+        // Tag필드가 비어있거나 null인 데이터를 List로 저장 + 전시회 설명이 없는 데이터는 태그 생성에서 제외
         List<Exhibition> exhibitions = allExhibitions.stream()
-            .filter(e -> e.getTags() == null || e.getTags().isEmpty())
+            .filter(e1 -> e1.getTags() == null || e1.getTags().isEmpty())
+            .filter(e2 -> e2.getDescription() != null && !e2.getDescription().isBlank())
             .toList();
 
         log.info("태그가 없는 전시회 수: {}", exhibitions.size());
