@@ -204,7 +204,7 @@ public class ExhibitionServiceImpl implements ExhibitionService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ExhibitionInfoResponse> getExhibitionsOrderByNaverCount(String order) {
+    public List<ExhibitionInfoResponse> getExhibitionsOrderByNaverCount() {
 
         List<Exhibition> exhibitions;
 
