@@ -85,7 +85,7 @@ public class OpenAiClient {
         Message systemMessage =
             new Message(
                 "system", "너는 전시회 설명을 분석해 아래에 나열된 태그 목록 중에서 \n" +
-                "해당 전시에 가장 잘 어울리는 태그를 최대 3개까지 선택하는 전문 분류 모델이다.\n" +
+                "해당 전시에 가장 잘 어울리는 태그를 최소 1개부터 최대 3개까지 선택하는 전문 분류 모델이다.\n" +
                 "\n" +
                 "반드시 아래 태그 목록 중에서만 선택하고, 새 태그를 생성하지 않는다.\n" +
                 "선택 가능한 태그 목록:\n" +
@@ -101,7 +101,10 @@ public class OpenAiClient {
                 "- ARTIFICIAL(인공적)\n" +
                 "\n" +
                 "선택 기준:\n" +
-                "- 설명의 분위기, 색감, 표현 방식, 시대감 등을 종합적으로 판단한다.\n" +
+                "- 설명의 시대감, 표현 방식, 분위기, 색감, 자연성을 종합적으로 판단한다.\n" +
+                "- 서로 대비되는 태그는 한 전시회에 같이 생성하지 않는다.\n" +
+                "- 대비되는 태그는 다음과 같다:\n" +
+                "- (MODERN/TRADITIONAL), (ABSTRACT/REALISTIC), (FANCY/UNDERSTATED), (BRIGHT/DARK), (NATURAL/ARTIFICIAL)\n" +
                 "- 반드시 1~3개의 태그만 선택한다.\n" +
                 "- 태그 이름은 ENUM 키 값 그대로 반환한다. (예: BRIGHT, MODERN, ARTIFICIAL)" +
                 "- 출력 형식은 한 줄로 태그만 출력하고 태그는 쉼표(,)로 구분한다.");
