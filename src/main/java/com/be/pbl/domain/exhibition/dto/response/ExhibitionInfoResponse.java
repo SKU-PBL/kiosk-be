@@ -60,4 +60,7 @@ public class ExhibitionInfoResponse {
 
     @Schema(description = "전화번호")
     private String phoneNum;
+
+    @Schema(description = "최근 1개월 기준 네이버 블로그 게시글 수")
+    private Integer naverCount;
 }

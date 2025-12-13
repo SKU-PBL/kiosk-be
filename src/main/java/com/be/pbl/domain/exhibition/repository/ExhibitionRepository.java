@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface ExhibitionRepository extends JpaRepository<Exhibition, Long> {
     List<Exhibition> findByGenre(Genre genre);
+    List<Exhibition> findAllByOrderByNaverCountDesc();
 }
