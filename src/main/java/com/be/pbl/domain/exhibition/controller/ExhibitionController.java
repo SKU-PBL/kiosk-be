@@ -101,11 +101,9 @@ public class ExhibitionController {
             summary = "네이버 블로그 언급 수 기준 전시회 정렬 조회",
             description = "naverCount 기준으로 전시회를 정렬하여 조회합니다. (기본: 내림차순)"
     )
-    public ResponseEntity<BaseResponse<List<ExhibitionInfoResponse>>> getExhibitionsOrderByNaverCount(
-            @RequestParam(defaultValue = "desc") String order
-    ) {
+    public ResponseEntity<BaseResponse<List<ExhibitionInfoResponse>>> getExhibitionsOrderByNaverCount(){
         List<ExhibitionInfoResponse> response =
-                exhibitionService.getExhibitionsOrderByNaverCount(order);
+                exhibitionService.getExhibitionsOrderByNaverCount();
 
         return ResponseEntity.ok(
                 BaseResponse.success("네이버 블로그 언급 수 기준 전시회 조회 성공", response)

@@ -19,6 +19,6 @@ public interface ExhibitionService {
     void updateNaverCount(Long exhibitionId);
     void updateAllExhibitionsNaverCount();
     void updateNaverCountForEmpty();
-    List<ExhibitionInfoResponse> getExhibitionsOrderByNaverCount(String order);
+    List<ExhibitionInfoResponse> getExhibitionsOrderByNaverCount();
 
 }
