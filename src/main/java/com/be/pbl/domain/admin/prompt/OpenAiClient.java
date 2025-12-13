@@ -40,21 +40,21 @@ public class OpenAiClient {
         // 요청 구성
         GptRequest request = getGptRequest(prompt);
 
-        // 디버깅: 요청 내용 로그
+        /*// 디버깅: 요청 내용 로그
         log.info(
             "OpenAI 요청 - model: {}, messages size: {}",
             request.getModel(),
             request.getMessages().size());
-        log.info("OpenAI URL: {}", url);
+        log.info("OpenAI URL: {}", url);*/
 
-        // JSON 직렬화 확인을 위한 로그
+        /*// JSON 직렬화 확인을 위한 로그
         try {
             ObjectMapper mapper = new ObjectMapper();
             String jsonRequest = mapper.writeValueAsString(request);
             log.info("실제 전송되는 JSON: {}", jsonRequest);
         } catch (Exception e) {
             log.error("JSON 직렬화 실패", e);
-        }
+        }*/
 
         // HttpHeaders 명시적 설정
         HttpHeaders headers = new HttpHeaders();

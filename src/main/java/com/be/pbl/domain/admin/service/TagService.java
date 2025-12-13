@@ -58,7 +58,6 @@ public class TagService {
 
             // GPT API 응답 로깅
             log.info("=== GPT API 응답 시작 (전시회 ID: {}) ===", exhibition.getId());
-            log.info("모델: {}", response.getModel());
             if (response.getUsage() != null) {
                 log.info("토큰 사용량 - 입력: {}, 출력: {}, 총합: {}",
                     response.getUsage().getPromptTokens(),
