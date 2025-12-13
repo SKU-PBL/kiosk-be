@@ -201,6 +201,21 @@ public class ExhibitionServiceImpl implements ExhibitionService {
 
     private static final DateTimeFormatter POSTDATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
 
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ExhibitionInfoResponse> getExhibitionsOrderByNaverCount(String order) {
+
+        List<Exhibition> exhibitions;
+
+            // 기본: desc
+            exhibitions = exhibitionRepository.findAllByOrderByNaverCountDesc();
+
+        return exhibitions.stream()
+                .map(exhibitionMapper::toExhibitionResponse)
+                .toList();
+    }
+
     @Override
     @Transactional
     // 단건 재계산

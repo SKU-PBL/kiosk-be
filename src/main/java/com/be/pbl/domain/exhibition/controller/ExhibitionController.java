@@ -96,5 +96,20 @@ public class ExhibitionController {
                 BaseResponse.success("네이버 블로그 카운트 갱신 완료", null)
         );
     }
+    @GetMapping("/exhibitions/naver-count")
+    @Operation(
+            summary = "네이버 블로그 언급 수 기준 전시회 정렬 조회",
+            description = "naverCount 기준으로 전시회를 정렬하여 조회합니다. (기본: 내림차순)"
+    )
+    public ResponseEntity<BaseResponse<List<ExhibitionInfoResponse>>> getExhibitionsOrderByNaverCount(
+            @RequestParam(defaultValue = "desc") String order
+    ) {
+        List<ExhibitionInfoResponse> response =
+                exhibitionService.getExhibitionsOrderByNaverCount(order);
+
+        return ResponseEntity.ok(
+                BaseResponse.success("네이버 블로그 언급 수 기준 전시회 조회 성공", response)
+        );
+    }
 
 }
