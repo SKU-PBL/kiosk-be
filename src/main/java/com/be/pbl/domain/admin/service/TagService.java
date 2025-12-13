@@ -6,6 +6,7 @@ import com.be.pbl.domain.admin.exception.OpenAiErrorCode;
 import com.be.pbl.domain.admin.prompt.OpenAiClient;
 import com.be.pbl.domain.exhibition.entity.Exhibition;
 import com.be.pbl.domain.exhibition.entity.Tag;
+import com.be.pbl.domain.exhibition.exception.ExhibitionErrorCode;
 import com.be.pbl.domain.exhibition.repository.ExhibitionRepository;
 import com.be.pbl.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -33,16 +34,17 @@ public class TagService {
         List<Exhibition> allExhibitions = exhibitionRepository.findAll();
         log.info("전체 전시회 수: {}", allExhibitions.size());
 
-        // Tag필드가 비어있거나 null인 데이터를 List로 저장
+        // Tag필드가 비어있거나 null인 데이터를 List로 저장 + 전시회 설명이 없는 데이터는 태그 생성에서 제외
         List<Exhibition> exhibitions = allExhibitions.stream()
-            .filter(e -> e.getTags() == null || e.getTags().isEmpty())
+            .filter(e1 -> e1.getTags() == null || e1.getTags().isEmpty())
+            .filter(e2 -> e2.getDescription() != null && !e2.getDescription().isBlank())
             .toList();
 
         log.info("태그가 없는 전시회 수: {}", exhibitions.size());
 
         if (exhibitions.isEmpty()) {
-            log.warn("태그 생성이 필요한 전시회가 없습니다. 모든 전시회에 태그가 이미 존재합니다.");
-            return new ArrayList<>();
+            // log.warn("태그 생성이 필요한 전시회가 없습니다. 모든 전시회에 태그가 이미 존재합니다.");
+            throw new CustomException(ExhibitionErrorCode.EXHIBITION_FOR_TAG_EMPTY);
         }
 
         // 응답 리스트
@@ -58,7 +60,6 @@ public class TagService {
 
             // GPT API 응답 로깅
             log.info("=== GPT API 응답 시작 (전시회 ID: {}) ===", exhibition.getId());
-            log.info("모델: {}", response.getModel());
             if (response.getUsage() != null) {
                 log.info("토큰 사용량 - 입력: {}, 출력: {}, 총합: {}",
                     response.getUsage().getPromptTokens(),

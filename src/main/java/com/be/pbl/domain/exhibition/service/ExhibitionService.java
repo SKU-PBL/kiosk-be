@@ -16,5 +16,9 @@ public interface ExhibitionService {
     ExhibitionRecommendResponse recommendExhibitions(QuestionAnswerListRequest request); // 이상형 월드컵 응답 기반 전시회 3개 추천 메서드
     List<ExhibitionInfoResponse> getExhibitionsByGenre(Genre genre);
     void updateExhibition(Long id, ExhibitionPatchRequest request);
+    void updateNaverCount(Long exhibitionId);
+    void updateAllExhibitionsNaverCount();
+    void updateNaverCountForEmpty();
+    List<ExhibitionInfoResponse> getExhibitionsOrderByNaverCount();
 
 }
