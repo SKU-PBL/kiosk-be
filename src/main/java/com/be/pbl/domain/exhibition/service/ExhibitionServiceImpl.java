@@ -9,6 +9,8 @@ import com.be.pbl.domain.exhibition.entity.Genre;
 import com.be.pbl.domain.exhibition.entity.Tag;
 import com.be.pbl.domain.exhibition.exception.ExhibitionErrorCode;
 import com.be.pbl.domain.exhibition.mapper.ExhibitionMapper;
+import com.be.pbl.domain.exhibition.naver.NaverSearch;
+import com.be.pbl.domain.exhibition.naver.NaverSearchResponse;
 import com.be.pbl.domain.exhibition.repository.ExhibitionRepository;
 import com.be.pbl.domain.question.dto.request.QuestionAnswerListRequest;
 import com.be.pbl.domain.question.entity.Question;
@@ -19,11 +21,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import com.be.pbl.global.exception.CustomException;
-import com.be.pbl.domain.exhibition.exception.ExhibitionErrorCode;
 import com.be.pbl.domain.question.exception.QuestionErrorCode;
 
 @Service
@@ -34,6 +36,7 @@ public class ExhibitionServiceImpl implements ExhibitionService {
     private final QuestionRepository questionRepository;
     private final ExhibitionRepository exhibitionRepository;
     private final ExhibitionMapper exhibitionMapper;
+    private final NaverSearch naverSearch;
 
     @Override
     @Transactional
@@ -159,6 +162,130 @@ public class ExhibitionServiceImpl implements ExhibitionService {
                 .exhibitions(exhibitionMapper.toRecommendResponses(top3Exhibitions))
                 .build();
     }
+
+    @Transactional
+    // 이거는 naverCount 비어있는 전시회 계산
+    public void updateNaverCountForEmpty() {
+        List<Exhibition> all = exhibitionRepository.findAll();
+
+        List<Exhibition> targets = all.stream()
+                .filter(e -> !e.isNaverProcessed())
+                .toList();
+        log.info("naverCount 갱신 대상 전시회 수: {}", targets.size());
+
+        int MAX = 50; // 안전장치
+        int processed = 0;
+
+        for (Exhibition exhibition : targets) {
+            if (processed >= MAX) {
+                log.warn("안전장치로 {}개까지만 처리하고 중단합니다.", MAX);
+                break;
+            }
+
+            try {
+                int count = countBlogsInLastMonth(exhibition.getTitle(), exhibition.getGalleryName());
+                exhibition.updateNaverCount(count);
+                exhibition.markNaverProcessed();
+                processed++;
+
+                log.info("전시회 ID {} ({}): naverCount={}", exhibition.getId(), exhibition.getTitle(), count);
+
+            } catch (Exception e) {
+                log.error("전시회 ID {} naverCount 갱신 실패", exhibition.getId(), e);
+            }
+        }
+
+        log.info("naverCount 갱신 완료. 처리된 전시회 수: {}", processed);
+    }
+
+
+    private static final DateTimeFormatter POSTDATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
+
+    @Override
+    @Transactional
+    // 단건 재계산
+    public void updateNaverCount(Long exhibitionId) {
+        Exhibition exhibition = exhibitionRepository.findById(exhibitionId)
+                .orElseThrow(() -> new CustomException(ExhibitionErrorCode.EXHIBITION_NOT_FOUND));
+
+        int count = countBlogsInLastMonth(exhibition.getTitle(), exhibition.getGalleryName());
+        exhibition.updateNaverCount(count);
+        exhibition.markNaverProcessed();
+
+    }
+
+    @Override
+    @Transactional
+    // 전체 강제 재계산
+    public void updateAllExhibitionsNaverCount() {
+        List<Exhibition> exhibitions = exhibitionRepository.findAll();
+
+        for (Exhibition exhibition : exhibitions) {
+            int count = countBlogsInLastMonth(exhibition.getTitle(), exhibition.getGalleryName());
+            exhibition.updateNaverCount(count);
+            exhibition.markNaverProcessed();
+
+        }
+    }
+
+    /**
+     * 전시회 제목으로 네이버 블로그 검색 → 최근 1개월 글 개수 계산
+     * - 정렬이 100% 완벽하지 않을 수 있으므로 "break"가 아니라
+     *   "최근 글이 아예 없는 페이지가 나오면 종료" 방식
+     */
+    private int countBlogsInLastMonth(String title, String galleryName) {
+        LocalDate twoMonthsAgo = LocalDate.now().minusMonths(2);
+
+        int count = 0;
+        int start = 1;
+        int display = 100;
+        int MAX_PAGE = 3; // 성능/요금 방어(필요하면 조정)
+
+        Set<String> seenLinks = new HashSet<>();
+        for (int page = 0; page < MAX_PAGE; page++) {
+            NaverSearchResponse response = naverSearch.searchByTitleAndGallery(title, galleryName, start, display, "date");
+            List<NaverSearchResponse.Item> items = response.getItems();
+
+            if (items == null || items.isEmpty()) break;
+
+            boolean shouldStop = false;
+
+            for (NaverSearchResponse.Item item : items) {
+                // postdate가 비어있거나 이상하면 스킵(방어)
+                if (item.getPostdate() == null || item.getPostdate().isBlank()) continue;
+
+                // 중복 글 방지
+                if (!seenLinks.add(item.getLink())) {
+                    continue;
+                }
+
+                LocalDate postDate = LocalDate.parse(item.getPostdate(), POSTDATE_FORMATTER);
+
+                if (postDate.isBefore(twoMonthsAgo)) {
+                    shouldStop = true;
+                    break;
+                }
+                log.info(
+                        "[NAVER] title={}, postDate={}, link={}, desc={}",
+                        title,
+                        postDate,
+                        item.getLink(),
+                        item.getDescription()
+                );
+                count ++;
+            }
+
+            // 이번 페이지에 최근 2개월 글이 하나도 없으면 종료
+            if (shouldStop) break;
+            start += display;
+            if (start > 500) break;
+        }
+
+        return count;
+    }
+
+
+
     // 0~4 -> left/right weight
     private static final double[][] SCORE_WEIGHTS = {
             {1.0, 0.0},

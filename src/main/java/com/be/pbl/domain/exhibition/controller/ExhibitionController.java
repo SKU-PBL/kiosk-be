@@ -73,5 +73,28 @@ public class ExhibitionController {
                 BaseResponse.success("전시회 추천 성공", response)
         );
     }
+    @PostMapping("/naver-count/reload")
+    @Operation(
+            summary = "모든 전시회 네이버 블로그 카운트 갱신", description = "모든 전시회의 제목으로 최근 1개월 기준 네이버 블로그 게시물 수를 naverCount 필드에 저장합니다."
+    )
+    public ResponseEntity<BaseResponse<Void>> reloadAllNaverCount() {
+        exhibitionService.updateAllExhibitionsNaverCount();
+        return ResponseEntity.ok(
+                BaseResponse.success("네이버 블로그 카운트 전체 갱신 완료", null)
+        );
+    }
+
+    @PostMapping("/{exhibitionId}/naver-count/reload")
+    @Operation(
+            summary = "단일 전시회 네이버 블로그 카운트 갱신", description = "특정 전시회의 제목으로 최근 1개월 기준 네이버 블로그 게시글 수를 naverCount 필드에 저장합니다."
+    )
+    public ResponseEntity<BaseResponse<Void>> reloadOneNaverCount(
+            @PathVariable Long exhibitionId
+    ) {
+        exhibitionService.updateNaverCount(exhibitionId);
+        return ResponseEntity.ok(
+                BaseResponse.success("네이버 블로그 카운트 갱신 완료", null)
+        );
+    }
 
 }

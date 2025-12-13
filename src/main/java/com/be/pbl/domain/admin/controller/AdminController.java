@@ -5,6 +5,7 @@ import com.be.pbl.domain.admin.dto.response.TagResponse;
 import com.be.pbl.domain.admin.service.AdminExhibitionService;
 import com.be.pbl.domain.admin.service.TagService;
 import com.be.pbl.domain.exhibition.dto.response.ExhibitionInfoResponse;
+import com.be.pbl.domain.exhibition.service.ExhibitionService;
 import com.be.pbl.global.response.BaseResponse;
 import com.be.pbl.global.s3.PathName;
 import com.be.pbl.global.s3.dto.response.S3Response;
@@ -29,6 +30,7 @@ public class AdminController {
     private final AdminExhibitionService adminExhibitionService;
     private final S3Service s3Service;
     private final TagService  tagService;
+    private final ExhibitionService exhibitionService;
 
     @PostMapping("/exhibitions")
     @Operation(
@@ -66,5 +68,16 @@ public class AdminController {
         log.info("전시회 설명 기반 태그 생성 시작");
         List<TagResponse> response = tagService.createTag();
         return ResponseEntity.ok(BaseResponse.success("태그 생성 성공",  response));
+    }
+
+    @PostMapping("/updateNaverCount")
+    @Operation(
+            summary = "(전시회 제목 + 갤러리 이름) 기반 네이버 블로그 카운트 저장",
+            description = "naverCount가 비어있는 전시회를 대상으로 최근 1개월 네이버 블로그 게시물 수를 계산하여 저장합니다."
+    )
+    public ResponseEntity<BaseResponse<Void>> updateNaverCount(){
+        log.info("전시회 제목 기반 네이버 블로그 카운트 저장 시작");
+        exhibitionService.updateNaverCountForEmpty();
+        return ResponseEntity.ok(BaseResponse.success("네이버 블로그 카운트 저장 성공", null));
     }
 }
