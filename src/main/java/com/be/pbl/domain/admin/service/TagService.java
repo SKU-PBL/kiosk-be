@@ -6,6 +6,7 @@ import com.be.pbl.domain.admin.exception.OpenAiErrorCode;
 import com.be.pbl.domain.admin.prompt.OpenAiClient;
 import com.be.pbl.domain.exhibition.entity.Exhibition;
 import com.be.pbl.domain.exhibition.entity.Tag;
+import com.be.pbl.domain.exhibition.exception.ExhibitionErrorCode;
 import com.be.pbl.domain.exhibition.repository.ExhibitionRepository;
 import com.be.pbl.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -42,8 +43,8 @@ public class TagService {
         log.info("태그가 없는 전시회 수: {}", exhibitions.size());
 
         if (exhibitions.isEmpty()) {
-            log.warn("태그 생성이 필요한 전시회가 없습니다. 모든 전시회에 태그가 이미 존재합니다.");
-            return new ArrayList<>();
+            // log.warn("태그 생성이 필요한 전시회가 없습니다. 모든 전시회에 태그가 이미 존재합니다.");
+            throw new CustomException(ExhibitionErrorCode.EXHIBITION_FOR_TAG_EMPTY);
         }
 
         // 응답 리스트
