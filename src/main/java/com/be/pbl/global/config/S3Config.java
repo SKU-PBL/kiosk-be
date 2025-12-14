@@ -33,6 +33,8 @@ public class S3Config {
   @Value("${cloud.aws.s3.path.exhibition}")
   private String exhibition;
 
+  @Value("question")
+  private String question;
   @PostConstruct
   public void init() {
     this.awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
