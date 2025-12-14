@@ -45,4 +45,16 @@ public class Question extends BaseTimeEntity {
     }
 
 
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public void setRightImageUrl(String rightImageUrl) {
+        this.rightImageUrl = rightImageUrl;
+    }
+
+    public void setLeftImageUrl(String leftImageUrl) {
+        this.leftImageUrl = leftImageUrl;
+    }
 }

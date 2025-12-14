@@ -9,7 +9,7 @@ import com.be.pbl.domain.exhibition.service.ExhibitionService;
 import com.be.pbl.global.response.BaseResponse;
 import com.be.pbl.global.s3.PathName;
 import com.be.pbl.global.s3.dto.response.S3Response;
-import com.be.pbl.global.s3.service.S3Service;
+import com.be.pbl.global.s3.service.ExhibitionS3Service;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -28,7 +28,7 @@ import java.util.List;
 public class AdminController {
 
     private final AdminExhibitionService adminExhibitionService;
-    private final S3Service s3Service;
+    private final ExhibitionS3Service s3Service;
     private final TagService  tagService;
     private final ExhibitionService exhibitionService;
 

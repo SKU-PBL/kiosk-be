@@ -1,20 +1,17 @@
 package com.be.pbl.domain.admin.service;
 
 import com.be.pbl.domain.admin.dto.request.ExhibitionCreateRequest;
-import com.be.pbl.domain.admin.dto.response.TagResponse;
 import com.be.pbl.domain.exhibition.dto.response.ExhibitionInfoResponse;
 import com.be.pbl.domain.exhibition.entity.Exhibition;
 import com.be.pbl.domain.exhibition.exception.ExhibitionErrorCode;
 import com.be.pbl.domain.exhibition.mapper.ExhibitionMapper;
 import com.be.pbl.domain.exhibition.repository.ExhibitionRepository;
 import com.be.pbl.global.exception.CustomException;
-import com.be.pbl.global.s3.service.S3Service;
+import com.be.pbl.global.s3.service.ExhibitionS3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +20,7 @@ public class AdminExhibitionService {
 
     private final ExhibitionRepository exhibitionRepository;
     private final ExhibitionMapper exhibitionMapper;
-    private final S3Service s3Service;
+    private final ExhibitionS3Service s3Service;
 
     @Transactional
     public ExhibitionInfoResponse createExhibition(ExhibitionCreateRequest request) {

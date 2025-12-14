@@ -111,4 +111,21 @@ public class QuestionServiceImpl implements QuestionService {
             throw new CustomException(QuestionErrorCode.QUESTION_CREATE_FAILED);
         }
     }
+
+    @Override
+    public List<QuestionResponse> getAllQuestions() {
+        log.info("전체 질문 조회 요청");
+
+        List<Question> questions = questionRepository.findAll();
+
+        if (questions.isEmpty()) {
+            log.warn("조회된 질문이 없습니다.");
+        }
+
+        log.info("조회된 질문 수: {}", questions.size());
+
+        return questions.stream()
+                .map(questionMapper::toResponse)
+                .toList();
+    }
 }

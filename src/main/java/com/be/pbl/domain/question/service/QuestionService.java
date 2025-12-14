@@ -12,5 +12,10 @@ public interface QuestionService {
 
     // 질문 단건(개별) 조회
     QuestionResponse getQuestion(Long id);
+
+    // 질문 생성
     QuestionResponse createQuestion(QuestionCreateRequest request);
+
+    // 모든 질문 조회
+    List<QuestionResponse> getAllQuestions();
 }

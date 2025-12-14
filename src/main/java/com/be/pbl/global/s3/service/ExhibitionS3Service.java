@@ -6,7 +6,6 @@ import com.amazonaws.services.s3.model.ListObjectsV2Request;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.be.pbl.domain.exhibition.entity.Exhibition;
-import com.be.pbl.domain.exhibition.exception.ExhibitionErrorCode;
 import com.be.pbl.domain.exhibition.repository.ExhibitionRepository;
 import com.be.pbl.global.config.S3Config;
 import com.be.pbl.global.exception.CustomException;
@@ -31,7 +30,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @AllArgsConstructor
-public class S3Service {
+public class ExhibitionS3Service {
     private final AmazonS3 amazonS3;
     private final S3Config s3Config;
     private final ExhibitionRepository exhibitionRepository;
