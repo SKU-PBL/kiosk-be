@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.w3c.dom.Text;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -77,6 +76,18 @@ public class Exhibition extends BaseTimeEntity {
     @Column(name = "isS3Upload", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean isS3Upload = false; // img url s3로 업로드 되었는지 여부
 
+    @Column(name = "naver_count", nullable = false)
+    private Integer naverCount = 0; // 최근 1개월 네이버 블로그 글 개수
+
+    @Column(name = "naver_processed", nullable = false)
+    private boolean naverProcessed = false;
+
+    public void markNaverProcessed() {
+        this.naverProcessed = true;
+    }
+    public void updateNaverCount(int naverCount) {
+        this.naverCount = naverCount;
+    }
     public void setTitle(String title) {
         this.title = title;
     }
@@ -127,7 +138,6 @@ public class Exhibition extends BaseTimeEntity {
     public void setPhoneNum(String phoneNum) {
         this.phoneNum = phoneNum;
     }
-
     // S3 업로드 상태 업데이트 메서드
     public void updateIsS3Upload(boolean isS3Upload) {
         this.isS3Upload = isS3Upload;
