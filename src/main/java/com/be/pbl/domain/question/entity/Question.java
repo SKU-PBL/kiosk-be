@@ -39,5 +39,15 @@ public class Question extends BaseTimeEntity {
     @Column(name = "right_image_url")
     private String rightImageUrl;
 
-    // 생성 타임 & 수정 타임 추가하기
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public void setRightImageUrl(String rightImageUrl) {
+        this.rightImageUrl = rightImageUrl;
+    }
+
+    public void setLeftImageUrl(String leftImageUrl) {
+        this.leftImageUrl = leftImageUrl;
+    }
 }

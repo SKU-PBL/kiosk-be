@@ -76,9 +76,11 @@ public class Exhibition extends BaseTimeEntity {
     @Column(name = "isS3Upload", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean isS3Upload = false; // img url s3로 업로드 되었는지 여부
 
+    @Builder.Default
     @Column(name = "naver_count", nullable = false)
     private Integer naverCount = 0; // 최근 1개월 네이버 블로그 글 개수
 
+    @Builder.Default
     @Column(name = "naver_processed", nullable = false)
     private boolean naverProcessed = false;
 
