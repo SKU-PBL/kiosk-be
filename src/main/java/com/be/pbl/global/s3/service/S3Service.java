@@ -202,6 +202,8 @@ public class S3Service {
 
         return switch (pathName) {
             case EXHIBITION -> s3Config.getExhibition();
+            case QUESTION   -> s3Config.getQuestion();
+
         }
             + '/'
             + UUID.randomUUID();
@@ -233,6 +235,8 @@ public class S3Service {
     public List<String> getAllFiles(PathName pathName) {
         String prefix = switch (pathName) {
             case EXHIBITION -> s3Config.getExhibition();
+            case QUESTION   -> s3Config.getQuestion();
+
         };
 
         try {
@@ -252,6 +256,8 @@ public class S3Service {
     public void deleteFile(PathName pathName, String fileName) {
         String prefix = switch (pathName) {
             case EXHIBITION -> s3Config.getExhibition();
+            case QUESTION   -> s3Config.getQuestion();
+
         };
         String keyName = prefix + "/" + fileName;
         deleteFile(keyName);
