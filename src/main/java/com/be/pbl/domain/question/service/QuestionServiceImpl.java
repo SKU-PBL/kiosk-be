@@ -9,7 +9,7 @@ import com.be.pbl.domain.question.mapper.QuestionMapper;
 import com.be.pbl.domain.question.repository.QuestionRepository;
 import com.be.pbl.global.exception.CustomException;
 import com.be.pbl.global.s3.PathName;
-import com.be.pbl.global.s3.service.S3Service;
+import com.be.pbl.global.s3.service.ExhibitionS3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,7 +29,7 @@ public class QuestionServiceImpl implements QuestionService {
 
     private final QuestionRepository questionRepository;
     private final QuestionMapper questionMapper;
-    private final S3Service s3Service;
+    private final ExhibitionS3Service s3Service;
 
     @Override
     public List<QuestionResponse> getFiveRandomQuestions() {
@@ -99,7 +99,9 @@ public class QuestionServiceImpl implements QuestionService {
             Question question = questionMapper.toEntity(request);
 
             // 3) entity에 S3 URL 반영
-            question.updateImages(leftS3Url, rightS3Url);
+            question.setLeftImageUrl(leftS3Url);
+            question.setRightImageUrl(rightS3Url);
+            // question.updateImages(leftS3Url, rightS3Url);
 
             // 4) 저장
             Question saved = questionRepository.save(question);

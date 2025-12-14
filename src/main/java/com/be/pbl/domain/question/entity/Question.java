@@ -38,12 +38,6 @@ public class Question extends BaseTimeEntity {
     // 오른쪽 이미지 URL
     @Column(name = "right_image_url")
     private String rightImageUrl;
-    // Question.java
-    public void updateImages(String leftImageUrl, String rightImageUrl) {
-        this.leftImageUrl = leftImageUrl;
-        this.rightImageUrl = rightImageUrl;
-    }
-
 
 
     public void setCategory(Category category) {
