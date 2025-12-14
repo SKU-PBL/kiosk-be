@@ -262,6 +262,18 @@ public class S3Service {
         String keyName = prefix + "/" + fileName;
         deleteFile(keyName);
     }
+    // S3Service.java
+    public String uploadImageFromUrl(PathName pathName, String imageUrl) {
+        if (imageUrl == null || imageUrl.isBlank()) return null;
+
+        // 이미 S3면 그대로 반환 (중복 업로드 방지)
+        if (imageUrl.contains("amazonaws.com") || imageUrl.contains("s3")) {
+            return imageUrl;
+        }
+
+        return uploadSingleImageFromUrl(pathName, imageUrl);
+    }
+
 
     // 파일 존재 여부 확인
     private void existFile(String keyName) {
