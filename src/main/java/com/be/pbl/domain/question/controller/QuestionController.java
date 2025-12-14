@@ -31,6 +31,15 @@ public class QuestionController {
     private final QuestionService questionService;
     private final QuestionS3Service questionS3Service;
 
+    @GetMapping("/all")
+    @Operation(summary = "질문 전체 조회", description = "등록된 모든 질문을 조회합니다.")
+    public ResponseEntity<BaseResponse<List<QuestionResponse>>> getAllQuestions() {
+        List<QuestionResponse> responses = questionService.getAllQuestions();
+        return ResponseEntity.ok(
+                BaseResponse.success("질문 전체 조회에 성공했습니다.", responses)
+        );
+    }
+
     @GetMapping
     @Operation(summary = "랜덤 질문 5개 조회", description = "카테고리 별 1개씩 총 5개의 무작위 질문 조회합니다.")
     public ResponseEntity<BaseResponse<List<QuestionResponse>>> getFiveRandomQuestions() {
